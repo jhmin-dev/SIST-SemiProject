@@ -62,7 +62,7 @@ input,textarea,select,option {
 /* 공통 : 상단 바 */
 .header {
 	position: fixed;
-	z-index: 1;
+	z-index: 2; /* 부트스트랩 캐러셀 컨트롤의 z-index가 1이므로 더 높은 값 사용 */
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
