@@ -28,3 +28,22 @@ carrot/src/main/webapp/WEB-INF/wallet/
 
 # for other purposes
 docs/
+
+### Eclipse ###
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# Eclipse Core
+.project
+
+# JDT-specific
+.classpath
