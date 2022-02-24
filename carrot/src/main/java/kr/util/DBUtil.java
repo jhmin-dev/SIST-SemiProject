@@ -10,23 +10,18 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 public class DBUtil {
-	//context.xml에서 설정 정보를 읽어와서 커넥션풀로부터 커넥션을 할당받는 작업.
+	// context.xml에서 설정 정보를 읽어와서 커넥션풀로부터 커넥션을 할당받는 작업.
 	public static Connection getConnection() throws Exception{
 		Context initCtx = new InitialContext();
-		DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/xe");
+		DataSource ds = (DataSource)initCtx.lookup("java:comp/env/jdbc/cloud");
 		return ds.getConnection();
 	}
 	
-	//자원정리
+	// 자원정리
 	public static void executeClose(ResultSet rs,PreparedStatement pstmt, Connection conn) {
-		if(rs!=null)try {rs.close();}catch(SQLException e) {};
-		if(pstmt!=null)try {pstmt.close();}catch(SQLException e) {};
-		if(conn!=null)try {conn.close();}catch(SQLException e) {};
+		if(rs!=null) try {rs.close();} catch(SQLException e) {};
+		if(pstmt!=null) try {pstmt.close();} catch(SQLException e) {};
+		if(conn!=null) try {conn.close();} catch(SQLException e) {};
 	}
 	
-	
 }
-
-
-
-

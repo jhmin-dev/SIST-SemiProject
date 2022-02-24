@@ -24,25 +24,25 @@ public class DispatcherServlet extends HttpServlet{
 
 	@Override
 	public void init(ServletConfig config)throws ServletException{
-		// "/WEB-INF/ActionMap.properties" ¹İÈ¯
+		// "/WEB-INF/ActionMap.properties" ë°˜í™˜
 		String propsPath = config.getInitParameter("propertiesPath");
 		
-		//web.xml¿¡ ¾Æ·¡¿Í °°ÀÌ properties ÆÄÀÏ ºĞÇÒÇÒ °æ¿ì
+		//web.xmlì— ì•„ë˜ì™€ ê°™ì´ properties íŒŒì¼ ë¶„í• í•  ê²½ìš°
         // /WEB-INF/ActionMap.properties,/WEB-INF/ActionMap2.properties
         String[] propsArray = propsPath.split(",");
         if(propsArray == null){
-        	//properties ÆÄÀÏÀÌ ºĞ¸®µÇ¾î ÀÖÁö ¾Ê¾Æµµ ¹è¿­·Î º¯È¯
+        	//properties íŒŒì¼ì´ ë¶„ë¦¬ë˜ì–´ ìˆì§€ ì•Šì•„ë„ ë°°ì—´ë¡œ ë³€í™˜
         	propsArray = (String[])Arrays.asList(propsPath).toArray();
         }
         
-        Properties pr = new Properties();//¸í·É¾î¿Í Ã³¸®Å¬·¡½ºÀÇ ¸ÅÇÎÁ¤º¸¸¦ ÀúÀåÇÒ Properties°´Ã¼ »ı¼º
+        Properties pr = new Properties();//ëª…ë ¹ì–´ì™€ ì²˜ë¦¬í´ë˜ìŠ¤ì˜ ë§¤í•‘ì •ë³´ë¥¼ ì €ì¥í•  Propertiesê°ì²´ ìƒì„±
 		
         for(String props : propsArray){
         	FileInputStream fis = null;
         	try {
         		String path = config.getServletContext().getRealPath(props);
-        		fis = new FileInputStream(path); //ActionMap.propertiesÆÄÀÏÀÇ ³»¿ëÀ» ÀĞ¾î¿È
-            		pr.load(fis);//ActionMap.propertiesÆÄÀÏÀÇ Á¤º¸¸¦  Properties°´Ã¼¿¡ ÀúÀå
+        		fis = new FileInputStream(path); //ActionMap.propertiesíŒŒì¼ì˜ ë‚´ìš©ì„ ì½ì–´ì˜´
+            		pr.load(fis);//ActionMap.propertiesíŒŒì¼ì˜ ì •ë³´ë¥¼  Propertiesê°ì²´ì— ì €ì¥
         	} catch (IOException e) {
             		throw new ServletException(e);
         	} finally {
@@ -50,20 +50,20 @@ public class DispatcherServlet extends HttpServlet{
         	} 	
         }
         System.out.println("-----------------------------");
-		//Properties °´Ã¼¿¡¼­ key ±¸ÇÏ±â
+		//Properties ê°ì²´ì—ì„œ key êµ¬í•˜ê¸°
 		Iterator<?> keyIter = pr.keySet().iterator();
 		while(keyIter.hasNext()){
 			String command = (String)keyIter.next(); //key
 			String className = pr.getProperty(command); //value
 			
 			try {
-				//¹®ÀÚ¿­À» ÀÌ¿ëÇØ Å¬·¡½º¸¦ Ã£¾Æ Class Å¸ÀÔÀ¸·Î ¹İÈ¯
+				//ë¬¸ìì—´ì„ ì´ìš©í•´ í´ë˜ìŠ¤ë¥¼ ì°¾ì•„ Class íƒ€ì…ìœ¼ë¡œ ë°˜í™˜
 				Class<?> commandClass = Class.forName(className);
-				//°´Ã¼·Î »ı¼º
+				//ê°ì²´ë¡œ ìƒì„±
 				Object commandInstance = commandClass.getDeclaredConstructor().newInstance();
 				
 				System.out.println(command + "," + commandInstance);
-				//HashMap¿¡ key¿Í value·Î µî·Ï
+				//HashMapì— keyì™€ valueë¡œ ë“±ë¡
 				commandMap.put(command, (Action)commandInstance);
 			} catch (Exception e) {
 				throw new ServletException(e);
@@ -94,22 +94,22 @@ public class DispatcherServlet extends HttpServlet{
 			command = command.substring(request.getContextPath().length());
 		}
 		
-		//HashMap¿¡ key¸¦ ³Ö¾î¼­ value(¸ğµ¨ °´Ã¼)¸¦ ¾òÀ½
+		//HashMapì— keyë¥¼ ë„£ì–´ì„œ value(ëª¨ë¸ ê°ì²´)ë¥¼ ì–»ìŒ
 		com = commandMap.get(command);
 		
 		try{
-			//µ¥ÀÌÅÍ¸¦ »ı¼ºÇØ¼­ request¿¡ ÀúÀåÇÏ°í 
-			//jsp °æ·Î ¹İÈ¯
+			//ë°ì´í„°ë¥¼ ìƒì„±í•´ì„œ requestì— ì €ì¥í•˜ê³ 
+			//jsp ê²½ë¡œ ë°˜í™˜
 			view = com.execute(request, response);
 		}catch(Exception e){
 			throw new ServletException(e);
 		}
 		
-		if(view.startsWith("redirect:")){//¸®´ÙÀÌ·ºÆ®
+		if(view.startsWith("redirect:")){//ë¦¬ë‹¤ì´ë ‰íŠ¸
 			view = view.substring("redirect:".length());
 			response.sendRedirect(request.getContextPath()+view);
 		}else{
-			//forward ¹æ½ÄÀ¸·Î view(jsp) È£Ãâ
+			//forward ë°©ì‹ìœ¼ë¡œ view(jsp) í˜¸ì¶œ
 			RequestDispatcher dispatcher =
 					request.getRequestDispatcher(view);
 			dispatcher.forward(request, response);
