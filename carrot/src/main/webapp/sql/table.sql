@@ -1,177 +1,181 @@
-/*Amember(회원정보 테이블)*/
-CREATE TABLE Amember(
-	Amember_num number not null,
-	id varchar2(30) unique not null,
-	auth number(1) default 2 not null, /*회원 등급:0이 탈퇴회원, 1이 정지회원,2 일반회원,3 관리자*/
-	constraint amember_pk primary key(Amember_num)
+-- MEMBER
+-- Oracle에서 user는 예약어라 테이블명이나 컬럼명으로 사용 불가
+CREATE TABLE member(
+	member NUMBER NOT NULL,
+	id VARCHAR2(30) UNIQUE NOT NULL, /* 영문 대문자만 허용 */
+	auth NUMBER(1) DEFAULT 2 NOT NULL, /* 0=탈퇴, 1=정지, 2=일반, 3=관리자 */
+	CONSTRAINT member_pk PRIMARY KEY (member)
 );
 
-/*Amember_detail(회원 상세 정보 테이블)*/
-CREATE TABLE Amember_detail(
-	Amember_num number not null,
-	name varchar2(30) not null,
-	nickname varchar2(30) not null,
-	password varchar2(30) not null,
-	age date not null,
-	phone varchar2(11) not null,
-	address varchar2(90) not null,
-	address_favor varchar2(90),
-	email varchar2(50),
-	photo varchar2(150),
-	rate number(5),
-	reg_date date default SYSDATE not null,
-	constraint amember_detail_pk primary key(Amember_num),
-	constraint amemeber_detail_fk foreign key (Amember_num) references Amember(Amember_num)
-);
-create sequence Amember_seq;
-ALTER TABLE amember_detail MODIFY rate NUMBER(5,3);
+-- MEMBER_SEQ
+CREATE SEQUENCE member_seq START WITH 10; /* 0~9는 관리자 예약 */
 
-/*Acategory(상품 분류 정보 테이블)*/
-CREATE TABLE Acategory(
-	category number(2) not null,
-	name varchar2(90) not null,
-	constraint Acategory_pk primary key(category)
+-- MEMBER_DETAIL
+CREATE TABLE member_detail(
+	member NUMBER NOT NULL,
+	nickname VARCHAR2(30) NOT NULL,
+	password VARCHAR2(30) NOT NULL, /* 최소 길이 6자, 특수문자 1자 이상, 영문 대소문자 구별 */
+	phone VARCHAR2(13), /* 하이픈 포함 */
+	home VARCHAR2(90) NOT NULL, /* 회원이 거주하는 동네의 주소(읍면동까지) */
+	sido VARCHAR2(30) NOT NULL, /* 회원이 거주하는 동네의 광역자치단체명 */
+	sigungu VARCHAR2(30) NOT NULL, /* 회원이 거주하는 동네의 시/군/구명 */
+	bname VARCHAR2(30) NOT NULL, /* 회원이 거주하는 동네의 법정동/리명 */
+	main VARCHAR2(90), /* 메인 페이지에서 기본적으로 보여줄 동네 */
+	email VARCHAR2(50),
+	profile VARCHAR2(150),
+	rate NUMBER,
+	registered DATE DEFAULT SYSDATE NOT NULL,
+	CONSTRAINT member_detail_pk PRIMARY KEY (member),
+	CONSTRAINT member_detail_fk FOREIGN KEY (member) REFERENCES member (member)
 );
 
-/*Acategory 초기 데이터 세팅 */
-INSERT INTO acategory
-	SELECT 1, '디지털기기' FROM DUAL UNION ALL
-	SELECT 2, '생활/가전' FROM DUAL UNION ALL
-	SELECT 3, '남성의류/잡화' FROM DUAL UNION ALL
-	SELECT 4, '여성의류/잡화/미용' FROM DUAL UNION ALL
-	SELECT 5, '유아동/유아도서' FROM DUAL UNION ALL
-	SELECT 6, '스포츠' FROM DUAL UNION ALL
-	SELECT 7, '생활/가구' FROM DUAL;
 
-/*Aproduct(상품정보 테이블)*/
-CREATE TABLE Aproduct(
-	Aproduct_num number not null,
-	Amember_num number not null,
-	photo1 varchar2(150) not null,
-	photo2 varchar2(150),
-	photo3 varchar2(150),
-	photo4 varchar2(150),
-	photo5 varchar2(150),
-	title varchar2(150) not null,
-	price number(9) not null,
-	content clob not null,
-	category number(2) not null,
-	reg_date date default SYSDATE,
-	modify_date date,
-	complete number(1) default 0,
-	buyer_num number,
-	constraint Aproduct_pk primary key(Aproduct_num),
-	constraint Aproduct_fk1 foreign key (Amember_num) references Amember(Amember_num),
-	constraint Aproduct_fk2 foreign key (category) references Acategory(category),
-	constraint Aproduct_fk3 foreign key (buyer_num) references Amember(Amember_num)
+-- CATEGORY
+CREATE TABLE category(
+	category NUMBER NOT NULL, /* 0=기타, 1=삽니다 */
+	name VARCHAR2(90) NOT NULL,
+	hidden NUMBER(1) DEFAULT 0 NOT NULL, /* 0=숨겨지지 않음, 1=숨겨짐 */
+	CONSTRAINT category_pk PRIMARY KEY (category)
 );
-create sequence aproduct_seq;
-ALTER TABLE Aproduct ADD status NUMBER(1) DEFAULT 2 NOT NULL;
 
-/*Amyproduct(찜한 상품 테이블)*/
-CREATE TABLE Amyproduct(
-	Amyproduct_num number not null,
-	Aproduct_num number not null,
-	Amember_num number not null,
-	constraint Amyproduct_pk primary key(Amyproduct_num),
-	constraint Amyproduct_fk1 foreign key(Aproduct_num) references Aproduct(Aproduct_num),
-	constraint Amyproduct_fk2 foreign key(Amember_num) references Amember(Amember_num)
+-- CATEGORY_SEQ
+CREATE SEQUENCE category_seq START WITH 10;
+
+-- CATEGORY 초기 데이터 세팅
+-- Oracle에서 SEQUENCE는 UNION ON과 함께 사용 불가; UNION ON을 서브쿼리로 처리하고 그 바깥에서 SEQUENCE를 사용해야 함
+INSERT INTO category (category, name)
+	SELECT NVL(category, category_seq.NEXTVAL) AS category, name
+	FROM (SELECT 0 AS category, '기타 중고물품' AS name FROM DUAL UNION ALL
+		SELECT NULL, '디지털기기' FROM DUAL UNION ALL
+		SELECT NULL, '생활가전' FROM DUAL UNION ALL
+		SELECT NULL, '가구/인테리어' FROM DUAL UNION ALL
+		SELECT NULL, '유아동' FROM DUAL UNION ALL
+		SELECT NULL, '생활/가공식품' FROM DUAL UNION ALL
+		SELECT NULL, '유아도서' FROM DUAL UNION ALL
+		SELECT NULL, '스포츠/레저' FROM DUAL UNION ALL
+		SELECT NULL, '여성잡화' FROM DUAL UNION ALL
+		SELECT NULL, '여성의류' FROM DUAL UNION ALL
+		SELECT NULL, '남성패션/잡화' FROM DUAL UNION ALL
+		SELECT NULL, '게임/취미' FROM DUAL UNION ALL
+		SELECT NULL, '뷰티/미용' FROM DUAL UNION ALL
+		SELECT NULL, '반려동물용품' FROM DUAL UNION ALL
+		SELECT NULL, '도서/티켓/음반' FROM DUAL UNION ALL
+		SELECT NULL, '식물' FROM DUAL UNION ALL
+		SELECT NULL, '중고차' FROM DUAL UNION ALL
+		SELECT 1, '삽니다' FROM DUAL);
+
+-- PRODUCT
+CREATE TABLE product(
+	product NUMBER NOT NULL,
+	member NUMBER NOT NULL,
+	photo1 VARCHAR2(150) NOT NULL,
+	photo2 VARCHAR2(150),
+	photo3 VARCHAR2(150),
+	photo4 VARCHAR2(150),
+	photo5 VARCHAR2(150),
+	title VARCHAR2(150) NOT NULL,
+	price NUMBER(9) NOT NULL, /* 0=나눔 */
+	content CLOB NOT NULL,
+	category NUMBER NOT NULL,
+	registered DATE DEFAULT SYSDATE NOT NULL,
+	modified DATE,
+	complete NUMBER(1) DEFAULT 0 NOT NULL, /* 0=판매 중, 1=거래 완료 */
+	buyer NUMBER,
+	deleted NUMBER(1) DEFAULT 0 NOT NULL, /* 0=삭제되지 않음, 1=삭제됨 */
+	CONSTRAINT product_pk PRIMARY KEY (product),
+	CONSTRAINT product_fk FOREIGN KEY (member) REFERENCES member (member),
+	CONSTRAINT product_fk2 FOREIGN KEY (category) REFERENCES category (category),
+	CONSTRAINT product_fk3 FOREIGN KEY (buyer) REFERENCES member (member)
 );
-create sequence Amyproduct_seq;
 
-/*Amanner(매너 평가 정보 테이블)*/
-CREATE TABLE Amanner(
-	Amanner_num number not null,
-	Amember_num number not null,
-	Aproduct_num number not null,
-	rate number(1) not null,
-	review clob not null,
-	buyer_num number not null,
-	constraint Amanner_pk primary key(Amanner_num),
-	constraint Amanner_fk1 foreign key(Amember_num) references Amember(Amember_num),
-	constraint Amanner_fk2 foreign key(Aproduct_num) references Aproduct(Aproduct_num),
-	constraint Amanner_fk3 foreign key(buyer_num) references Amember(Amember_num)
+-- PRODUCT_SEQ
+CREATE SEQUENCE product_seq START WITH 10;
+
+-- MYPRODUCT
+CREATE TABLE myproduct(
+	myproduct NUMBER NOT NULL,
+	product NUMBER NOT NULL,
+	member NUMBER NOT NULL,
+	CONSTRAINT myproduct_pk PRIMARY KEY (myproduct),
+	CONSTRAINT myproduct_fk FOREIGN KEY (product) REFERENCES product (product),
+	CONSTRAINT myproduct_fk2 FOREIGN KEY (member) REFERENCES member (member),
+	CONSTRAINT myproduct_uk UNIQUE (product, member)
 );
-create sequence Amanner_seq;
 
-/*Acomment(상품 댓글 테이블)*/
-CREATE TABLE Acomment(
-	Acomment_num number not null,
-	Amember_num number not null,
-	Aproduct_num number not null,
-	content varchar2(900) not null,
-	Acomment_parent number,
-	reg_date date default sysdate,
-	constraint Acomment_pk primary key(Acomment_num),
-	constraint Acomment_fk1 foreign key(Amember_num) references Amember(Amember_num),
-	constraint Acomment_fk2 foreign key(Aproduct_num) references Aproduct(Aproduct_num)
+-- MYPRODUCT_SEQ
+CREATE SEQUENCE myproduct_seq START WITH 10;
+
+
+-- MANNER
+CREATE TABLE manner(
+	manner NUMBER NOT NULL,
+	product NUMBER NOT NULL,
+	seller NUMBER NOT NULL,
+	buyer NUMBER NOT NULL,
+	rate NUMBER(1) NOT NULL, /* 1~5점 */
+	review CLOB NOT NULL,
+	CONSTRAINT manner_pk PRIMARY KEY (manner),
+	CONSTRAINT manner_fk FOREIGN KEY (product) REFERENCES product (product),
+	CONSTRAINT manner_fk2 FOREIGN KEY (seller) REFERENCES member (member),
+	CONSTRAINT manner_fk3 FOREIGN KEY (buyer) REFERENCES member (member),
+	CONSTRAINT manner_uk UNIQUE (product, seller, buyer)
 );
-ALTER TABLE Acomment ADD CONSTRAINT Acomment_fk3 foreign key(Acomment_parent) references Acomment(Acomment_num);
-CREATE SEQUENCE Acomment_seq;
-ALTER TABLE Acomment ADD modify_date DATE;
-ALTER TABLE Acomment ADD deleted NUMBER(1) DEFAULT 0 NOT NULL;
 
-/*Aboard(공지 및 회원 상담 테이블)*/
-CREATE TABLE Aboard(
-	Aboard_num number not null,
-	Amember_num number not null,
-	category varchar2(1) not null,
-	title varchar2(150) not null,
-	content clob not null,
-	auth_num number(1) not null,
-	reg_date date default sysdate,
-	reply_num number,
-	board_category_num number(2),
-	constraint Aboard_pk primary key(Aboard_num),
-	constraint Aboard_fk1 foreign key(Amember_num) references Amember(Amember_num)
-	constraint Aboard_fk2 foreign key(board_category_num) references Aboard_category(board_category_num)
+-- MANNER_SEQ
+CREATE SEQUENCE manner_seq START WITH 10;
+
+
+-- CHATROOM
+CREATE TABLE chatroom(
+	chatroom NUMBER NOT NULL,
+	product NUMBER NOT NULL,
+	seller NUMBER NOT NULL,
+	buyer NUMBER NOT NULL,
+	CONSTRAINT chatroom_pk PRIMARY KEY (chatroom),
+	CONSTRAINT chatroom_fk FOREIGN KEY (product) REFERENCES product (product),
+	CONSTRAINT chatroom_fk2 FOREIGN KEY (seller) REFERENCES member (member),
+	CONSTRAINT chatroom_fk3 FOREIGN KEY (buyer) REFERENCES member (member),
+	CONSTRAINT chatroom_uk UNIQUE (product, seller, buyer)
 );
-ALTER TABLE Aboard ADD CONSTRAINT Aboard_fk3 foreign key(reply_num) references Aboard(Aboard_num);
-ALTER TABLE Aboard ADD ALTER TABLE aboard ADD(auth_num number(1) not null);
-create sequence Aboard_seq;
 
-CREATE TABLE ABOARD_CATEGORY(
-	Aboard_category_num number(2) not null,
-	Aboard_category_name varchar2(90) not null,
-	constraint Aboard_category_pk primary key(Aboard_category_num)
+-- CHATROOM_SEQ
+CREATE SEQUENCE chatroom_seq START WITH 10;
+
+-- CHAT
+CREATE TABLE chat(
+	chat NUMBER NOT NULL,
+	chatroom NUMBER NOT NULL,
+	member NUMBER NOT NULL,
+	opponent NUMBER NOT NULL,
+	content VARCHAR2(900) NOT NULL,
+	sent DATE DEFAULT SYSDATE NOT NULL,
+	received DATE,
+	read NUMBER(1) DEFAULT 0 NOT NULL, /* 0=읽지 않음, 1=읽음 */
+	CONSTRAINT chat_pk PRIMARY KEY (chat),
+	CONSTRAINT chat_fk FOREIGN KEY (chatroom) REFERENCES chatroom (chatroom),
+	CONSTRAINT chat_fk2 FOREIGN KEY (member) REFERENCES member (member),
+	CONSTRAINT chat_fk3 FOREIGN KEY (opponent) REFERENCES member (member)
 );
-INSERT INTO Aboard_Category
-	SELECT 1, '운영정책' FROM DUAL UNION ALL
-	SELECT 2,'구매/판매' FROM DUAL UNION ALL
-	SELECT 3,'거래매너' FROM DUAL UNION ALL
-	SELECT 4,'이용제재' FROM DUAL;
+
+-- CHAT_SEQ
+CREATE SEQUENCE chat_seq START WITH 10;
 
 
-/*Achat(채팅 정보 테이블)*/
-CREATE TABLE Achat(
-	Amember_num number not null,
-	opponent_num number not null,
-	content varchar2(900) not null,
-	send_date date default sysdate,
-	read_date date,
-	read number(1) default 1,
-	constraint Achat_fk1 foreign key(Amember_num) references Amember(Amember_num),
-	constraint Achat_fk2 foreign key(opponent_num) references Amember(Amember_num)
+-- REPLY
+CREATE TABLE reply(
+	reply NUMBER NOT NULL,
+	product NUMBER NOT NULL,
+	member NUMBER NOT NULL,
+	content VARCHAR2(900) NOT NULL,
+	parent NUMBER,
+	registered DATE DEFAULT SYSDATE NOT NULL,
+	modified DATE,
+	deleted NUMBER(1) DEFAULT 0 NOT NULL, /* 0=삭제되지 않음, 1=삭제됨 */
+	CONSTRAINT reply_pk PRIMARY KEY (reply),
+	CONSTRAINT reply_fk FOREIGN KEY (product) REFERENCES product (product),
+	CONSTRAINT reply_fk2 FOREIGN KEY (member) REFERENCES member (member)
 );
-ALTER TABLE Achat ADD Aproduct_num NUMBER NOT NULL;
-ALTER TABLE Achat ADD CONSTRAINT Achat_fk3 foreign key(Aproduct_num) references Aproduct(Aproduct_num);
-ALTER TABLE Achat ADD Achat_num NUMBER NOT NULL;
-ALTER TABLE Achat ADD CONSTRAINT Achat_pk PRIMARY KEY (Achat_num);
-CREATE SEQUENCE Achat_seq;
+ALTER TABLE reply ADD CONSTRAINT reply_fk3 FOREIGN KEY (parent) REFERENCES reply (reply);
 
-/* Achatroom (채팅방 정보 테이블) */
-CREATE TABLE Achatroom (
-	achatroom_num NUMBER NOT NULL,
-	aproduct_num NUMBER NOT NULL,
-	seller_num NUMBER NOT NULL,
-	buyer_num NUMBER NOT NULL,
-	CONSTRAINT achatroom_pk PRIMARY KEY (achatroom_num),
-	CONSTRAINT achatroom_fk1 FOREIGN KEY (aproduct_num) REFERENCES Aproduct (Aproduct_num),
-	CONSTRAINT achatroom_fk2 FOREIGN KEY (seller_num) REFERENCES Amember (Amember_num),
-	CONSTRAINT achatroom_fk3 FOREIGN KEY (buyer_num) REFERENCES Amember (Amember_num)
-);
-CREATE SEQUENCE Achatroom_seq;
-ALTER TABLE Achatroom ADD CONSTRAINT Achatroom_unique UNIQUE (aproduct_num, seller_num, buyer_num);
-
-ALTER TABLE Achat ADD achatroom_num NUMBER NOT NULL;
-ALTER TABLE Achat ADD CONSTRAINT Achat_fk4 FOREIGN KEY (achatroom_num) REFERENCES Achatroom (Achatroom_num);
+-- REPLY_SEQ
+CREATE SEQUENCE reply_seq START WITH 10;

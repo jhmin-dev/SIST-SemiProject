@@ -1,0 +1,17 @@
+DROP SEQUENCE reply_seq;
+DROP TABLE reply;
+DROP SEQUENCE chat_seq;
+DROP TABLE chat;
+DROP SEQUENCE chatroom_seq;
+DROP TABLE chatroom;
+DROP SEQUENCE manner_seq;
+DROP TABLE manner;
+DROP SEQUENCE myproduct_seq;
+DROP TABLE myproduct;
+DROP SEQUENCE product_seq;
+DROP TABLE product;
+DROP SEQUENCE category_seq;
+DROP TABLE category;
+DROP TABLE member_detail;
+DROP SEQUENCE member_seq;
+DROP TABLE member;

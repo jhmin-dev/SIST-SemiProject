@@ -25,6 +25,7 @@ hs_err_pid*
 # DB
 carrot/src/main/webapp/META-INF/context.xml
 carrot/src/main/webapp/WEB-INF/wallet/
+carrot/src/main/webapp/sql/user.sql
 
 # for other purposes
 docs/
@@ -41,6 +42,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+carrot/build/
 
 # Eclipse Core
 .project
