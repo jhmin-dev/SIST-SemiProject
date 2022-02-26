@@ -1,0 +1,14 @@
+-- https://cloud.oracle.com/db/adb
+-- ALTER DATABASE나 ALTER SESSION 실행 후에는 해당 데이터베이스의 상세 페이지에 접속하여 상단 메뉴에서 More Actions-Restart해야 적용됨
+
+-- ALTER DATABASE로 시간대 변경시 DBTIMEZONE 값이 변경됨
+ALTER DATABASE SET TIME_ZONE = 'Asia/Seoul';
+SELECT DBTIMEZONE FROM DUAL;
+
+-- ALTER SESSION으로 시간대 변경시 SESSIONTIMEZONE 값 및 CURRENT_, LOCAL 값이 변경됨
+ALTER SESSION SET TIME_ZONE = 'Asia/Seoul';
+SELECT SESSIONTIMEZONE FROM DUAL;
+SELECT CURRENT_DATE, CURRENT_TIMESTAMP, LOCALTIMESTAMP FROM DUAL;
+
+-- SYSDATE, SYSTIMESTAMP는 클라우드 데이터베이스가 실행되는 OS의 시간대(=Cloud Shell에서 date 명령어로 조회되는 시간대)를 따르며 ALTER DATABASE나 ALTER SESSION에 영향 받지 않음
+SELECT SYSDATE, SYSTIMESTAMP FROM DUAL;

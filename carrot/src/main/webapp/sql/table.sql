@@ -15,16 +15,16 @@ CREATE TABLE member_detail(
 	member NUMBER NOT NULL,
 	nickname VARCHAR2(30) NOT NULL,
 	password VARCHAR2(30) NOT NULL, /* 최소 길이 6자, 특수문자 1자 이상, 영문 대소문자 구별 */
-	phone VARCHAR2(13), /* 하이픈 포함 */
 	home VARCHAR2(90) NOT NULL, /* 회원이 거주하는 동네의 주소(읍면동까지) */
 	sido VARCHAR2(30) NOT NULL, /* 회원이 거주하는 동네의 광역자치단체명 */
 	sigungu VARCHAR2(30) NOT NULL, /* 회원이 거주하는 동네의 시/군/구명 */
 	bname VARCHAR2(30) NOT NULL, /* 회원이 거주하는 동네의 법정동/리명 */
 	main VARCHAR2(90), /* 메인 페이지에서 기본적으로 보여줄 동네 */
+	phone VARCHAR2(13), /* 하이픈 포함 13자 */
 	email VARCHAR2(50),
 	profile VARCHAR2(150),
 	rate NUMBER,
-	registered DATE DEFAULT SYSDATE NOT NULL,
+	registered DATE DEFAULT CURRENT_DATE NOT NULL,
 	CONSTRAINT member_detail_pk PRIMARY KEY (member),
 	CONSTRAINT member_detail_fk FOREIGN KEY (member) REFERENCES member (member)
 );
@@ -77,7 +77,7 @@ CREATE TABLE product(
 	price NUMBER(9) NOT NULL, /* 0=나눔 */
 	content CLOB NOT NULL,
 	category NUMBER NOT NULL,
-	registered DATE DEFAULT SYSDATE NOT NULL,
+	registered DATE DEFAULT CURRENT_DATE NOT NULL,
 	modified DATE,
 	complete NUMBER(1) DEFAULT 0 NOT NULL, /* 0=판매 중, 1=거래 완료 */
 	buyer NUMBER,
@@ -148,7 +148,7 @@ CREATE TABLE chat(
 	member NUMBER NOT NULL,
 	opponent NUMBER NOT NULL,
 	content VARCHAR2(900) NOT NULL,
-	sent DATE DEFAULT SYSDATE NOT NULL,
+	sent DATE DEFAULT CURRENT_DATE NOT NULL,
 	received DATE,
 	read NUMBER(1) DEFAULT 0 NOT NULL, /* 0=읽지 않음, 1=읽음 */
 	CONSTRAINT chat_pk PRIMARY KEY (chat),
@@ -168,7 +168,7 @@ CREATE TABLE reply(
 	member NUMBER NOT NULL,
 	content VARCHAR2(900) NOT NULL,
 	parent NUMBER,
-	registered DATE DEFAULT SYSDATE NOT NULL,
+	registered DATE DEFAULT CURRENT_DATE NOT NULL,
 	modified DATE,
 	deleted NUMBER(1) DEFAULT 0 NOT NULL, /* 0=삭제되지 않음, 1=삭제됨 */
 	CONSTRAINT reply_pk PRIMARY KEY (reply),
