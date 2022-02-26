@@ -44,17 +44,6 @@
 					</li>
 					<li>
 						<div>
-							<label>휴대전화번호</label>
-							<select name="phone" id="area_code">
-								<option>010</option>
-								<option>070</option>
-								<option>직접 입력</option>
-							</select>
-							<input type="text" name="phone" id="phone2">
-						</div>
-					</li>
-					<li>
-						<div>
 							<label for="home">동네</label>
 							<input type="text" name="home" id="home" readonly>
 							<input type="button" value="동네 찾기" onclick="sample3_execDaumPostcode();">
@@ -63,6 +52,17 @@
 							<div id="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
 								<img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
 							</div>
+						</div>
+					</li>
+					<li>
+						<div>
+							<label>휴대전화번호</label>
+							<select name="phone" id="area_code">
+								<option>010</option>
+								<option>070</option>
+								<option>직접 입력</option>
+							</select>
+							<input type="text" name="phone" id="phone2">
 						</div>
 					</li>
 					<li>
