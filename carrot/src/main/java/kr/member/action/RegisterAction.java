@@ -17,28 +17,28 @@ public class RegisterAction implements Action {
 		request.setCharacterEncoding("UTF-8");
 		
 		// 자바빈 생성
-		MemberVO vo = new MemberVO();
-		vo.setId(request.getParameter("id").toUpperCase()); // 아이디는 DB에 대문자로 저장
-		vo.setPassword(request.getParameter("password").toUpperCase()); // 비밀번호는 DB에 대문자로 저장
-		vo.setName(request.getParameter("name"));
-		vo.setNickname(request.getParameter("nickname"));
-		String[] ages = request.getParameterValues("age");
-		String age = "";
-		for(int i=0;i<ages.length;i++) {
-			if(i>0) age += '-';
-			age += ages[i];
-		}
-		vo.setAge(Date.valueOf(age));
-		String[] phones = request.getParameterValues("phone");
-		String phone = "";
-		for(String s : phones) {
-			phone += s;
-		}
-		vo.setPhone(phone);
-		vo.setAddress(request.getParameter("address"));
-		vo.setEmail(request.getParameter("email"));
+		MemberVO memberVO = new MemberVO();
 		
-		MemberDAO.getInstance().insertMember(vo);
+		memberVO.setId(request.getParameter("id").toUpperCase()); // 아이디는 DB에 대문자로 저장
+		memberVO.setPassword(request.getParameter("password"));
+		memberVO.setNickname(request.getParameter("nickname"));	
+		
+		// 동네 처리
+		String home = request.getParameter("home");
+		memberVO.setHome(home);
+		String[] homes = home.split(" ");
+		memberVO.setSido(homes[0]);
+		memberVO.setSigungu(homes[1]);
+		memberVO.setBname(homes[2]);
+		
+		// 전화번호 처리
+		StringBuffer phone = new StringBuffer(request.getParameterValues("phone")[0]).append("-");
+		phone.append(new StringBuffer(request.getParameterValues("phone")[1]).insert(4, "-"));
+		memberVO.setPhone(phone.toString());
+		
+		memberVO.setEmail(request.getParameter("email"));
+		
+		MemberDAO.getInstance().registerMember(memberVO);
 		
 		// JSP 경로 반환
 		return "/WEB-INF/views/member/register.jsp";

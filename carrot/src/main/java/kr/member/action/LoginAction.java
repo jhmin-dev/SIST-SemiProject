@@ -22,33 +22,40 @@ public class LoginAction implements Action {
 		Map<String, Object> mapAjax = new HashMap<String, Object>();
 		
 		String id = request.getParameter("id").toUpperCase(); // 사용자 입력 값을 대문자로 변환
-		String password = request.getParameter("password").toUpperCase(); // 사용자 입력 값을 대문자로 변환
+		String password = request.getParameter("password");
 		
 		MemberDAO dao = MemberDAO.getInstance();
-		MemberVO db_vo = dao.checkMember(id);
-		boolean check = false;
 		
-		if(db_vo!=null) { // 아이디 존재
-			// 비밀번호 일치 여부 체크
-			check = db_vo.checkPassword(password);
-			// 로그인 실패시 auth 값 이용
-			mapAjax.put("auth", db_vo.getAuth());
+		boolean login = false; // 로그인 결과를 보관할 변수
+		
+		MemberVO memberVO = dao.existsMember(id); // 사용자가 입력한 아이디가 존재하는지 조회
+		if(memberVO!=null) { // 아이디가 존재하면
+			login = memberVO.isValid(password); // 사용자가 입력한 비밀번호가 유효한지 검증
+			
+			mapAjax.put("auth", memberVO.getAuth()); // 회원 등급에 따른 UI 처리를 위해
 		}
 		
-		if(check) { // 인증 성공
+		if(login) { // 아이디와 비밀번호가 유효하면
 			// 로그인 처리
 			HttpSession session = request.getSession();
-			session.setAttribute("user_num", db_vo.getAmember_num());
-			session.setAttribute("user_id", db_vo.getId());
-			session.setAttribute("user_nickname", db_vo.getNickname());
-			session.setAttribute("user_auth", db_vo.getAuth());
-			session.setAttribute("user_photo", db_vo.getPhoto());
-			if(db_vo.getAddress_favor()!=null) session.setAttribute("user_address", db_vo.getAddress_favor());
-			else session.setAttribute("user_address", db_vo.getAddress());
+			session.setAttribute("user", memberVO.getMember());
+			
+			// 사이트 이용시 필요한 정보를 추가로 세션에 보관
+			memberVO = dao.getMember(memberVO); // 회원 상세 정보 조회
+			session.setAttribute("nickname", memberVO.getNickname());
+			session.setAttribute("profile", memberVO.getProfile());
+			if(memberVO.getMain()!=null) { // 선호 동네가 있으면
+				session.setAttribute("main", memberVO.getMain());				
+			}
+			else { // 선호 동네가 없으면
+				session.setAttribute("sido", memberVO.getSido());
+				session.setAttribute("sigungu", memberVO.getSigungu());
+				session.setAttribute("bname", memberVO.getBname());				
+			}
 			
 			mapAjax.put("result", "success");
 		}
-		else { // 인증 실패
+		else { // 아이디와 비밀번호가 유효하지 않으면
 			mapAjax.put("result", "invalid");
 		}
 		

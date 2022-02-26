@@ -20,9 +20,9 @@ public class CheckIdAction implements Action {
 		
 		Map<String, String> mapAjax = new HashMap<String, String>();
 		
-		MemberVO db_vo = MemberDAO.getInstance().checkMember(request.getParameter("id").toUpperCase()); // 사용자 입력 값을 대문자로 변환
+		MemberVO memberVO = MemberDAO.getInstance().existsMember(request.getParameter("id").toUpperCase()); // 사용자 입력 값을 대문자로 변환
 		
-		if(db_vo==null) {
+		if(memberVO==null) {
 			mapAjax.put("result", "idNotFound");
 		}
 		else {

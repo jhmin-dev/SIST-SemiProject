@@ -38,24 +38,8 @@
 					</li>
 					<li>
 						<div>
-							<label for="name">이름</label>
-							<input type="text" name="name" id="name">
-						</div>
-					</li>
-					<li>
-						<div>
 							<label for="nickname">별명</label>
 							<input type="text" name="nickname" id="nickname">
-						</div>
-					</li>
-					<li>
-						<div>
-							<label>생년월일</label>
-							<input type="text" name="age" id="year" placeholder="년(4자)">
-							<select name="age" id="month">
-								<option value="" selected disabled>월</option>
-							</select>
-							<input type="text" name="age" id="day" placeholder="일">
 						</div>
 					</li>
 					<li>
@@ -71,8 +55,8 @@
 					</li>
 					<li>
 						<div>
-							<label for="address">동네</label>
-							<input type="text" name="address" id="address" readonly>
+							<label for="home">동네</label>
+							<input type="text" name="home" id="home" readonly>
 							<input type="button" value="동네 찾기" onclick="sample3_execDaumPostcode();">
 						</div>
 						<div class="search">
@@ -121,9 +105,7 @@
 	let id = document.getElementById('id');
 	let password = document.getElementById('password');
 	let password_re = document.getElementById('password_re');
-	let month = document.getElementById('month');
-	let year = document.getElementById('year');
-	let day = document.getElementById('day');
+	let phone2 = document.getElementById('phone2');
 	let caution = document.querySelector('.caution');
 	let modal = document.querySelector('.modal');
 	
@@ -135,12 +117,6 @@
 	let firstdivs = document.querySelectorAll('form > ul > li > div:first-child');
 	for(let i=0;i<firstdivs.length;i++) {
 		firstdivs[i].classList.add('flex-row', 'justify-start');
-	}
-	
-	// 월 목록 생성
-	for(let i=1; i<13; i++) {
-		let option = new Option(i);
-		month.options[i] = option;
 	}
 	
 	// 휴대전화번호 입력 칸 동적 처리
@@ -163,12 +139,8 @@
 	validateBytesLength({
 		id:30,
 		password:30,
-		name:30,
 		nickname:30,
-		year:4,
-		day:2,
 		phone2:8,
-		address:90,
 		email:50
 	});
 
@@ -295,11 +267,9 @@
 			isValid = false;
 		}
 		
-		// 생년월일 유효성 검증
-		if((year.value<1900 || new Date(year.value + '-' + month.value + '-'+ day.value)=='Invalid Date') && isValid) {
-			setCaution(caution, '유효하지 않은 생년월일입니다!', year, true, true, true);
-			year.value = '';
-			day.value = '';
+		// 휴대전화번호 최소 길이 처리
+		if(phone2.value.length<8 && isValid) {
+			setCaution(caution, '형식에 맞지 않는 번호입니다!', phone2, true, true, true);
 			isValid = false;
 		}
 		
@@ -332,7 +302,7 @@
             	else addr += data.bname; // 법정동 지역인 경우
             	
                 // 읍면동까지의 정보를 동네 필드에 입력
-                document.getElementById('address').value = addr;
+                document.getElementById('home').value = addr;
 
                 // iframe을 넣은 element를 숨김
                 // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않음)

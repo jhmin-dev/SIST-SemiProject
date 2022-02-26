@@ -10,8 +10,8 @@ public class LogoutAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		HttpSession session = request.getSession();
-		session.invalidate();
+		// 세션에 보관된 모든 속성 값 제거
+		request.getSession().invalidate();
 		
 		// JSP 경로 반환
 		return "redirect:/main/main.do";

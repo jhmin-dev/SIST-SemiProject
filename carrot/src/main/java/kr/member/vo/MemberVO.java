@@ -1,38 +1,35 @@
 package kr.member.vo;
 
-import java.sql.Date;
-
-import kr.product.vo.ProductVO;
-
 public class MemberVO {
-	private int amember_num; // 회원 번호
-	private String id; // 아이디
-	private int auth; // 회원 등급; 0=탈퇴, 1=정지, 2=일반, 3=관리자
-	private String name; // 이름
-	private String nickname; // 별명
-	private String password; // 비밀번호
-	private Date age; // 생년월일
-	private String phone; // 휴대전화번호
-	private String address; // 회원 동네
-	private String address_favor; // 선호 동네
-	private String email; // 이메일
-	private String photo; // 프로필 사진 파일명
-	private Double rate; // 매너 점수
-	private Date reg_date; // 가입일
+	private int member; // 0~9는 관리자 예약
+	private String id; // 영문 대문자만 사용
+	private int auth; // 0=탈퇴, 1=정지, 2=일반, 3=관리자
+	private String nickname;
+	private String password; // 최소 길이 6자, 특수문자 1자 이상, 영문 대소문자 구별
+	private String home; // 거주 동네 주소(읍면동까지)
+	private String sido; // 거주 동네의 광역지방자치단체명
+	private String sigungu; // 거주 동네의 시/군/구명
+	private String bname; // 거주 동네의 법정동/리명
+	private String main; // 메인 페이지에서 기본으로 보여줄 동네
+	private String phone; // 하이픈 포함 13자
+	private String email;
+	private String profile;
+	private Double rate;
+	private String registered;
 	
-	// 비밀번호 일치 여부 체크
-	public boolean checkPassword(String UserPassword) {
-		if(auth > 1 && password.equals(UserPassword)) { // 탈퇴 및 정지 회원은 서비스 이용 불가하도록 처리
+	// 로그인시 입력한 아이디와 비밀번호가 유효한지 검증
+	public boolean isValid(String user_password) {
+		if(auth > 1 && password.equals(user_password)) { // 탈퇴 및 정지 회원은 서비스 이용 불가
 			return true;
 		}
 		return false;
-	}
+	}	
 	
-	public int getAmember_num() {
-		return amember_num;
+	public int getMember() {
+		return member;
 	}
-	public void setAmember_num(int amember_num) {
-		this.amember_num = amember_num;
+	public void setMember(int member) {
+		this.member = member;
 	}
 	public String getId() {
 		return id;
@@ -46,12 +43,6 @@ public class MemberVO {
 	public void setAuth(int auth) {
 		this.auth = auth;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	public String getNickname() {
 		return nickname;
 	}
@@ -64,11 +55,35 @@ public class MemberVO {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Date getAge() {
-		return age;
+	public String getHome() {
+		return home;
 	}
-	public void setAge(Date age) {
-		this.age = age;
+	public void setHome(String home) {
+		this.home = home;
+	}
+	public String getSido() {
+		return sido;
+	}
+	public void setSido(String sido) {
+		this.sido = sido;
+	}
+	public String getSigungu() {
+		return sigungu;
+	}
+	public void setSigungu(String sigungu) {
+		this.sigungu = sigungu;
+	}
+	public String getBname() {
+		return bname;
+	}
+	public void setBname(String bname) {
+		this.bname = bname;
+	}
+	public String getMain() {
+		return main;
+	}
+	public void setMain(String main) {
+		this.main = main;
 	}
 	public String getPhone() {
 		return phone;
@@ -76,29 +91,17 @@ public class MemberVO {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	public String getAddress_favor() {
-		return address_favor;
-	}
-	public void setAddress_favor(String address_favor) {
-		this.address_favor = address_favor;
-	}
 	public String getEmail() {
 		return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getPhoto() {
-		return photo;
+	public String getProfile() {
+		return profile;
 	}
-	public void setPhoto(String photo) {
-		this.photo = photo;
+	public void setProfile(String profile) {
+		this.profile = profile;
 	}
 	public Double getRate() {
 		return rate;
@@ -106,10 +109,10 @@ public class MemberVO {
 	public void setRate(Double rate) {
 		this.rate = rate;
 	}
-	public Date getReg_date() {
-		return reg_date;
+	public String getRegistered() {
+		return registered;
 	}
-	public void setReg_date(Date reg_date) {
-		this.reg_date = reg_date;
+	public void setRegistered(String registered) {
+		this.registered = registered;
 	}
 }
