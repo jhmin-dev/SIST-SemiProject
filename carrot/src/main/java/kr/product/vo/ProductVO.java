@@ -1,49 +1,43 @@
 package kr.product.vo;
 
-import java.sql.Date;
-
 import kr.member.vo.MemberVO;
 
 public class ProductVO {
-	private int Aproduct_num; // 상품번호
-	private int Amember_num;  //상품을 판매하는 회원번호
-	private String photo1; 	  //상품 사진 1번파일
-	private String photo2; 	  //상품 사진 2번파일
-	private String photo3; 	  //상품 사진 3번파일
-	private String photo4; 	  //상품 사진 4번파일
-	private String photo5; 	  //상품 사진 5번파일
-	private String title; 	  //상품 판매글의 제목
-	private int price; 	      //상품의 가격
-	private String content;   //상품 판매글의 내용
-	private int category;  //상품 분류 번호
-	private Date reg_date; 	  //상품 판매글의 등록일
-	private Date modify_date; //상품 판매글의 수정일
-	private int complete;  	  //거래 완료 여부 0=판매중, 1=거래완료
-	private int buyer_num;	  //상품을 구매한 회원번호
-	private int status; // 상품 표시 여부 1=미표시, 2=표시
+	private int product;
+	private int member;
+	private String photo1;
+	private String photo2;
+	private String photo3;
+	private String photo4;
+	private String photo5;
+	private String title;
+	private int price; // 0=나눔, 최대 9자리
+	private String content;
+	private int category; // 0=기타, 1=삽니다
+	private String registered;
+	private String modified;
+	private int complete; // 0=판매 중, 1=거래 완료
+	private int buyer;
+	private int deleted; // 0=삭제되지 않음, 1=삭제됨
 	
 	// 테이블에 없지만 필요한 정보
-	private String nickname;  //상품 판매자 닉네임
-	private String address; // 판매자 동네
-
 	private MemberVO memberVO; // 판매자 정보
 	private CategoryVO categoryVO; // 카테고리 정보
-	
 	private int replies; // 댓글 수
 	private int chats; // 채팅 수
 	private int likes; // 좋아요 수
-
-	public int getAproduct_num() {
-		return Aproduct_num;
+	
+	public int getProduct() {
+		return product;
 	}
-	public void setAproduct_num(int aproduct_num) {
-		Aproduct_num = aproduct_num;
+	public void setProduct(int product) {
+		this.product = product;
 	}
-	public int getAmember_num() {
-		return Amember_num;
+	public int getMember() {
+		return member;
 	}
-	public void setAmember_num(int amember_num) {
-		Amember_num = amember_num;
+	public void setMember(int member) {
+		this.member = member;
 	}
 	public String getPhoto1() {
 		return photo1;
@@ -99,17 +93,17 @@ public class ProductVO {
 	public void setCategory(int category) {
 		this.category = category;
 	}
-	public Date getReg_date() {
-		return reg_date;
+	public String getRegistered() {
+		return registered;
 	}
-	public void setReg_date(Date reg_date) {
-		this.reg_date = reg_date;
+	public void setRegistered(String registered) {
+		this.registered = registered;
 	}
-	public Date getModify_date() {
-		return modify_date;
+	public String getModified() {
+		return modified;
 	}
-	public void setModify_date(Date modify_date) {
-		this.modify_date = modify_date;
+	public void setModified(String modified) {
+		this.modified = modified;
 	}
 	public int getComplete() {
 		return complete;
@@ -117,33 +111,20 @@ public class ProductVO {
 	public void setComplete(int complete) {
 		this.complete = complete;
 	}
-	public int getBuyer_num() {
-		return buyer_num;
+	public int getBuyer() {
+		return buyer;
 	}
-	public void setBuyer_num(int buyer_num) {
-		this.buyer_num = buyer_num;
+	public void setBuyer(int buyer) {
+		this.buyer = buyer;
 	}
-	public int getStatus() {
-		return status;
+	public int getDeleted() {
+		return deleted;
 	}
-	public void setStatus(int status) {
-		this.status = status;
-	}
-
-	// 테이블에 없지만 필요한 정보
-	public String getNickname() {
-		return nickname;
-	}
-	public void setNickname(String nickname) {
-		this.nickname = nickname;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
+	public void setDeleted(int deleted) {
+		this.deleted = deleted;
 	}
 	
+	// 테이블에 없지만 필요한 정보
 	public MemberVO getMemberVO() {
 		return memberVO;
 	}
@@ -156,7 +137,6 @@ public class ProductVO {
 	public void setCategoryVO(CategoryVO categoryVO) {
 		this.categoryVO = categoryVO;
 	}
-
 	public int getReplies() {
 		return replies;
 	}
@@ -176,7 +156,3 @@ public class ProductVO {
 		this.likes = likes;
 	}
 }
-
-
-
-

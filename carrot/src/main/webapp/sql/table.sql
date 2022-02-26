@@ -64,6 +64,10 @@ INSERT INTO category (category, name)
 		SELECT NULL, '중고차' FROM DUAL UNION ALL
 		SELECT 1, '삽니다' FROM DUAL);
 
+-- CATEGORY 정렬용으로 컬럼 추가하고 값 변경
+ALTER TABLE category ADD sort NUMBER(1) DEFAULT 0 NOT NULL;
+UPDATE category SET sort=-1 WHERE category<10;
+
 -- PRODUCT
 CREATE TABLE product(
 	product NUMBER NOT NULL,

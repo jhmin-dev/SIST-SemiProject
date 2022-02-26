@@ -6,14 +6,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>메인</title>
+<title>번개 맞은 당근 나라</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/jhmin.css">
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 <div class="page-main">
-    
 <!-- 동네 선택, 카테고리 선택, 검색 시작 -->
 	<form id="search" action="main.do" method="get">
 		<ul class="flex-row space-between">
@@ -35,8 +34,8 @@
 				</div>
 				<select name="category">
 					<option disabled="disabled" <c:if test="${empty param.category}">selected</c:if>>카테고리 선택</option>
-					<c:forEach var="cat" items="${listCategory}">
-					<option value="${cat.category}" <c:if test="${param.category==cat.category}">selected</c:if>>${cat.name}</option>
+					<c:forEach var="item" items="${listCategory}">
+					<option value="${item.category}" <c:if test="${param.category==item.category}">selected</c:if>>${item.name}</option>
 					</c:forEach>
 				</select>
 				<input type="search" name="keyword" id="keyword" value="${param.keyword}">
@@ -44,7 +43,7 @@
 			</li>
 			<li class="flex-row">
 				<input type="button" value="목록" onclick="location.href = 'main.do';">
-				<input type="button" class="point" value="물품 등록" onclick="location.href = '${pageContext.request.contextPath}/product/writeForm.do';" <c:if test="${empty user_num}">disabled title="로그인 후 물품을 등록할 수 있습니다"</c:if>>
+				<input type="button" class="point" value="물품 등록" onclick="location.href = '${pageContext.request.contextPath}/product/writeForm.do';" <c:if test="${empty user}">disabled title="로그인 후 물품을 등록할 수 있습니다"</c:if>>
 			</li>
 		</ul>
 	</form>
@@ -59,22 +58,22 @@
 	</c:if>
 	<c:if test="${count>0}">
 	<ul class="list-main flex-row">
-		<c:forEach var="product" items="${list}">
+		<c:forEach var="item" items="${list}">
 		<li>
-			<a class="flex-column" href="${pageContext.request.contextPath}/product/detail.do?aproduct_num=${product.aproduct_num}">
-			<img src="${pageContext.request.contextPath}/upload/${product.photo1}">
-			<div class="list-product-title ellipsis">${product.title}</div>
+			<a class="flex-column" href="${pageContext.request.contextPath}/product/detail.do?product=${item.product}">
+			<img src="${pageContext.request.contextPath}/upload/${item.photo1}">
+			<div class="list-product-title ellipsis">${item.title}</div>
 			<div class="price">
-				<c:if test="${product.price==0}">
+				<c:if test="${item.price==0}">
 				나눔
 				</c:if>
-				<c:if test="${product.price>0}">
-				<fmt:formatNumber value="${product.price}"/>원
+				<c:if test="${item.price>0}">
+				<fmt:formatNumber value="${item.price}"/>원
 				</c:if>
 			</div>
-			<div class="address">${product.address}</div>
+			<div class="address">${item.memberVO.bname}</div>
 			<div class="info gray">
-				관심 ${product.likes} · 댓글 ${product.replies} · 채팅 ${product.chats}
+				관심 ${item.likes} · 댓글 ${item.replies} · 채팅 ${item.chats}
 			</div>
 			</a>
 		</li>
@@ -96,6 +95,7 @@
 		}, false);
 	}
 	
+	/*
 	let address_btn = document.getElementsByClassName('bi-map-fill')[0];
 	let modal = document.getElementsByClassName('modal')[0];
 	// 지도 클릭시 동네 선택 창 보이기
@@ -167,6 +167,7 @@
 			selectElement.remove(i);
 		}
 	}
+	*/
 	
 	// 카테고리 선택시 submit 이벤트 발생
 	let category = document.getElementsByName('category')[0];

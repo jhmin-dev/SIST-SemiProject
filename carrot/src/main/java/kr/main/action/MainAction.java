@@ -17,19 +17,20 @@ public class MainAction implements Action{
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {		
 		ProductDAO dao = ProductDAO.getInstance();
-		
+		/*
 		// 동네 목록
 		List<AddressVO> listAddress = dao.getListAddress();
 		if(listAddress!=null) {
 			request.setAttribute("listAddress", listAddress);
 		}
-		
+		*/
 		// 카테고리 목록
-		List<CategoryVO> listCategory = dao.getListCategory();
+		List<CategoryVO> listCategory = dao.getListCategory(false);
 		if(listCategory!=null) {
 			request.setAttribute("listCategory", listCategory);
 		}
 		
+		/*
 		// 물품 목록
 		String pageNum = request.getParameter("pageNum");
 		if(pageNum==null) pageNum = "1";
@@ -55,10 +56,11 @@ public class MainAction implements Action{
 		if(count>0) {
 			list = dao.getListProduct(page.getStartCount(), page.getEndCount(), category, keyword, address);
 		}
+		*/
 		
-		request.setAttribute("count", count);
-		request.setAttribute("list", list);
-		request.setAttribute("pagingHtml", page.getPagingHtml());
+		request.setAttribute("count", 0);
+		// request.setAttribute("list", list);
+		// request.setAttribute("pagingHtml", page.getPagingHtml());
 		
 		//JSP 경로 반환
 		return "/WEB-INF/views/main/main.jsp";
