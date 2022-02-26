@@ -134,6 +134,9 @@ input,textarea,select,option {
 .header-menu ul li a:hover div,.header-menu ul li a:hover i.bi{
 	color: var(--light-white);
 }
+.header-menu ul li a:hover svg.bi{
+	fill: var(--light-white);
+}
 .header-who {
 	display: flex;
 	flex-direction: row;
@@ -150,11 +153,12 @@ input,textarea,select,option {
 	border: 5px solid var(--light-white);
 	border-radius:50%;
 }
-.header-chat {
-/*	margin-top: -3px;*/
-}
-.header-chat a:hover {
-	color: var(--light-white);
+svg.bi {
+	margin: auto 0 auto 15px;
+	width: 30px;
+	height: 30px;
+	fill: var(--point);
+	transition: fill 0.5s ease;
 }
 .header-chat i.bi {
 	margin: 0;
