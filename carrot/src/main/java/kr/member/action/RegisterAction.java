@@ -38,8 +38,10 @@ public class RegisterAction implements Action {
 		
 		MemberDAO.getInstance().registerMember(memberVO);
 		
+		request.setAttribute("result", "회원 가입이 완료되었습니다!");		
+		
 		// JSP 경로 반환
-		return "/WEB-INF/views/member/register.jsp";
+		return "/WEB-INF/views/common/modal.jsp";
 	}
 
 }

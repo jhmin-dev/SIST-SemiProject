@@ -9,12 +9,6 @@ body {
 }
 
 /* 공통 : 레이아웃 */
-* {
-	box-sizing: border-box;
-}
-.page-main {
-	width: 1200px;
-}
 ul {
 	margin: 0 auto;
 	padding: 0;
@@ -224,7 +218,7 @@ form#search ul li input[type="search"] {
 
 /* 메인 : 동네 선택 */
 .modal {
-	z-index: 1;
+	z-index: 20; /* 상단 바의 z-index가 10이므로 더 높은 값 사용 */
 	position: absolute; 
 	top: 0; 
 	left: 0; 
