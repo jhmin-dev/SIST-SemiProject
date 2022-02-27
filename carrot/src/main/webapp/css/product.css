@@ -1,0 +1,84 @@
+@charset "UTF-8";
+
+/* 물품 등록 */
+.add {
+	margin: 75px auto 0;
+	padding: 0;
+	width: 720px;	
+}
+.add > li {
+	margin: 10px 0;
+	padding: 0;
+}
+.add form > ul > li {
+	margin: 5px 0;
+	padding: 0 15px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+.add form > ul > li > div {
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-items: center;
+}
+.add label {
+	width: 150px;
+}
+.add input:not([type="button"]),.add textarea {
+	width: 400px;
+}
+.add textarea {
+	height: 200px;
+}
+.add label[for="photo"].upload {
+	margin: 20px 50px 20px 0;
+	padding: 15px;
+	width: 100px;
+	height: 100px;
+	border-radius: 10px;
+	border: 3px solid var(--point);
+	color: var(--point);
+	background-color: transparent;
+	transition: all 0.5s ease;
+	cursor: pointer;
+}
+.add label[for="photo"].upload:hover {
+	border: 3px solid var(--point-hover);
+	color: var(--point-hover);
+	background-color: transparent;	
+}
+.add label[for="photo"].upload i.bi {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+.add label[for="photo"].upload div {
+	display: inline-flex;
+	justify-content: center;
+	color: var(--silver);
+}
+.add label[for="photo"].upload div span.enabled {
+	color: var(--point);
+}
+.add input[type="file"][name="photo"] {
+	display: none;
+}
+.add ul.list-thumbnail {
+	width: 550px;
+	overflow-x: auto;
+}
+.add ul.list-thumbnail li {
+	flex-wrap: nowrap;
+}
+.add img.thumbnail {
+	margin: 10px 0 10px 10px;
+	flex-shrink: 0;
+	width: 100px;
+	height: 100px;
+	border-radius: 10px;
+}
+.add img.thumbnail.hidden {
+	display: none;
+}

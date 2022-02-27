@@ -335,6 +335,42 @@ public class ProductDAO {
 		return product;
 	}
 	
+	// 물품 등록
+	public void addProduct(ProductVO productVO) throws Exception {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			
+			sql = "INSERT INTO product (product, member, "
+				+ "photo1, photo2, photo3, photo4, photo5, title, price, content, category) "
+				+ "VALUES (product_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, productVO.getMember());
+			pstmt.setString(2, productVO.getPhoto1());
+			pstmt.setString(3, productVO.getPhoto2());
+			pstmt.setString(4, productVO.getPhoto3());
+			pstmt.setString(5, productVO.getPhoto4());
+			pstmt.setString(6, productVO.getPhoto5());
+			pstmt.setString(7, productVO.getTitle());
+			pstmt.setInt(8, productVO.getPrice());
+			pstmt.setString(9, productVO.getContent());
+			pstmt.setInt(10, productVO.getCategory());
+			
+			pstmt.executeUpdate();
+		}
+		catch(Exception e) {
+			throw new Exception(e);
+		}
+		finally {
+			DBUtil.executeClose(null, pstmt, conn);
+		}
+	}
+	
 	/*
 	// 거래 완료하기
 	public void setComplete(int aproduct_num, int buyer_num) throws Exception {
