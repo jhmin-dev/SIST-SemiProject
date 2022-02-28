@@ -209,9 +209,6 @@ form#search {
 	width: 900px;
 	border: none;
 }
-form#search ul {
-
-}
 form#search ul li input[type="search"] {
 	width: 250px;
 }
@@ -251,11 +248,11 @@ form#search ul li input[type="search"] {
 .list-main li {
 	margin: 5px;
 	padding: 5px;
+	width: 210px;
 }
-.list-main li a div {
+.list-main .flex-column div {
 	margin-top: 5px;
 	padding: 0 10px;
-	max-width: 200px;
 }
 .list-product-title {
 	font-size: 1rem;

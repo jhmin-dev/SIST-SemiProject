@@ -33,7 +33,7 @@
 					</div>
 				</div>
 				<select name="category">
-					<option disabled="disabled" <c:if test="${empty param.category}">selected</c:if>>카테고리 선택</option>
+					<option disabled <c:if test="${empty param.category}">selected</c:if>>카테고리 선택</option>
 					<c:forEach var="item" items="${listCategory}">
 					<option value="${item.category}" <c:if test="${param.category==item.category}">selected</c:if>>${item.name}</option>
 					</c:forEach>
@@ -43,7 +43,7 @@
 			</li>
 			<li class="flex-row">
 				<input type="button" value="목록" onclick="location.href = 'main.do';">
-				<input type="button" class="point" value="물품 등록" onclick="location.href = '${pageContext.request.contextPath}/product/writeForm.do';" <c:if test="${empty user}">disabled title="로그인 후 물품을 등록할 수 있습니다"</c:if>>
+				<input type="button" class="point" value="물품 등록" onclick="location.href = '${pageContext.request.contextPath}/product/addForm.do';" <c:if test="${empty user}">disabled title="로그인 후 물품을 등록할 수 있습니다"</c:if>>
 			</li>
 		</ul>
 	</form>
@@ -59,7 +59,7 @@
 	<c:if test="${count>0}">
 	<ul class="list-main flex-row">
 		<c:forEach var="item" items="${list}">
-		<li>
+		<li class="flex-column">
 			<a class="flex-column" href="${pageContext.request.contextPath}/product/detail.do?product=${item.product}">
 			<img src="${pageContext.request.contextPath}/upload/${item.photo1}">
 			<div class="list-product-title ellipsis">${item.title}</div>
@@ -71,11 +71,11 @@
 				<fmt:formatNumber value="${item.price}"/>원
 				</c:if>
 			</div>
-			<div class="address">${item.memberVO.bname}</div>
+			</a>
+			<div><a class="address" href="main.do?sido=${item.memberVO.sido}&sigungu=${item.memberVO.sigungu}&bname=${item.memberVO.bname}">${item.memberVO.bname}</a></div>
 			<div class="info gray">
 				관심 ${item.likes} · 댓글 ${item.replies} · 채팅 ${item.chats}
 			</div>
-			</a>
 		</li>
 		</c:forEach>
 	</ul>
@@ -95,7 +95,6 @@
 		}, false);
 	}
 	
-	/*
 	let address_btn = document.getElementsByClassName('bi-map-fill')[0];
 	let modal = document.getElementsByClassName('modal')[0];
 	// 지도 클릭시 동네 선택 창 보이기
@@ -167,7 +166,6 @@
 			selectElement.remove(i);
 		}
 	}
-	*/
 	
 	// 카테고리 선택시 submit 이벤트 발생
 	let category = document.getElementsByName('category')[0];

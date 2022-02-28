@@ -22,7 +22,6 @@ public class ProductDAO {
 	}
 	private ProductDAO() {}
 
-	/*
 	// 동네 목록
 	public List<AddressVO> getListAddress() throws Exception {
 		List<AddressVO> list = null;
@@ -35,15 +34,7 @@ public class ProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT address, "
-					// 광역자치단체
-					+ "SUBSTR(address, 1, INSTR(address, ' ')-1) AS sido, "
-					// 시군구
-					+ "SUBSTR(address, INSTR(address, ' ')+1, INSTR(address, ' ', 1, 2)-1-INSTR(address, ' ')) AS sigungu, "
-					// 읍면동
-					+ "SUBSTR(address, INSTR(address, ' ', 1, 2)+1) AS bname "
-				+ "FROM (SELECT DISTINCT(address) FROM aproduct JOIN amember_detail USING(amember_num)) "
-				+ "ORDER BY address";
+			sql = "SELECT DISTINCT(home), sido, sigungu, bname FROM product JOIN member_detail USING(member) ORDER BY home";
 			
 			pstmt = conn.prepareStatement(sql);
 			
@@ -51,6 +42,7 @@ public class ProductDAO {
 			list = new ArrayList<AddressVO>();
 			while(rs.next()) {
 				AddressVO addressVO = new AddressVO();
+				addressVO.setAddress(rs.getString("home"));
 				addressVO.setSido(rs.getString("sido"));
 				addressVO.setSigungu(rs.getString("sigungu"));
 				addressVO.setBname(rs.getString("bname"));
@@ -67,7 +59,6 @@ public class ProductDAO {
 		
 		return list;
 	}
-	*/
 	
 	// 카테고리 목록
 	public List<CategoryVO> getListCategory(boolean hidden) throws Exception {
@@ -112,7 +103,7 @@ public class ProductDAO {
 	}
 
 	// 물품 수
-	public int getCountProduct(String category, String keyword, String address) throws Exception {
+	public int getCountProduct(String category, String keyword, String sido, String sigungu, String bname) throws Exception {
 		int count = 0;
 		
 		Connection conn = null;
@@ -128,16 +119,20 @@ public class ProductDAO {
 			// 검색 처리
 			if(category!=null && !category.isEmpty()) sub_sql += "AND category = ? ";
 			if(keyword!=null && !keyword.isEmpty()) sub_sql += "AND title LIKE ? ";
-			if(address!=null && !address.isEmpty()) sub_sql += "AND address LIKE ? ";
+			if(sido!=null && !sido.isEmpty()) sub_sql += "AND sido=? ";
+			if(sigungu!=null && !sigungu.isEmpty()) sub_sql += "AND sigungu=? ";
+			if(bname!=null && !bname.isEmpty()) sub_sql += "AND bname=? ";
 
-			sql = "SELECT COUNT(*) FROM aproduct JOIN amember_detail USING(amember_num) "
-				+ "WHERE status=2 AND complete=0 " + sub_sql;
+			sql = "SELECT COUNT(product) FROM product JOIN member_detail USING(member) "
+				+ "WHERE deleted=0 AND complete=0 " + sub_sql;
 			
 			pstmt = conn.prepareStatement(sql);
 			
 			if(category!=null && !category.isEmpty()) pstmt.setInt(++bind, Integer.parseInt(category));
 			if(keyword!=null && !keyword.isEmpty()) pstmt.setString(++bind, "%" + keyword + "%");
-			if(address!=null && !address.isEmpty()) pstmt.setString(++bind, "%" + address + "%");
+			if(sido!=null && !sido.isEmpty()) pstmt.setString(++bind, sido);
+			if(sigungu!=null && !sigungu.isEmpty()) pstmt.setString(++bind, sigungu);
+			if(bname!=null && !bname.isEmpty()) pstmt.setString(++bind, bname);
 			
 			rs = pstmt.executeQuery();	
 			if(rs.next()) {
@@ -155,7 +150,7 @@ public class ProductDAO {
 	}
 	
 	// 물품 목록
-	public List<ProductVO> getListProduct(int startCount, int endCount, String category, String keyword, String address) throws Exception {
+	public List<ProductVO> getListProduct(int startCount, int endCount, String category, String keyword, String sido, String sigungu, String bname) throws Exception {
 		List<ProductVO> list = null;
 		
 		Connection conn = null;
@@ -171,34 +166,36 @@ public class ProductDAO {
 			// 검색 처리
 			if(category!=null && !category.isEmpty()) sub_sql += "AND category = ? ";
 			if(keyword!=null && !keyword.isEmpty()) sub_sql += "AND title LIKE ? ";
-			if(address!=null && !address.isEmpty()) sub_sql += "AND address LIKE ? ";
+			if(sido!=null && !sido.isEmpty()) sub_sql += "AND sido=? ";
+			if(sigungu!=null && !sigungu.isEmpty()) sub_sql += "AND sigungu=? ";
+			if(bname!=null && !bname.isEmpty()) sub_sql += "AND bname=? ";
 			
 			sql = "SELECT * FROM (SELECT r.*, ROWNUM AS rnum "
 				// 판매자 동네 결합
-				+ "FROM (SELECT * FROM (SELECT p.*, d.address "
-					+ "FROM aproduct p JOIN amember_detail d ON p.amember_num=d.amember_num) "
+				+ "FROM (SELECT * FROM (SELECT p.*, d.home, d.sido, d.sigungu, d.bname "
+					+ "FROM product p JOIN member_detail d ON p.member=d.member) "
 					// 상품별 채팅 수 계산
-					+ "LEFT JOIN (SELECT COUNT(achatroom_num) AS chats, aproduct_num FROM achatroom "
-						+ "JOIN	(SELECT COUNT(achat_num), achatroom_num FROM achatroom "
-							+ "JOIN achat USING(achatroom_num) GROUP BY(achatroom_num)) "
-							+ "USING(achatroom_num) GROUP BY aproduct_num) "
-					+ "USING(aproduct_num) "
+					+ "LEFT JOIN (SELECT COUNT(chatroom) AS chats, product FROM chatroom "
+						+ "JOIN	(SELECT COUNT(chat), chatroom FROM chatroom "
+							+ "JOIN chat USING(chatroom) GROUP BY(chatroom)) "
+							+ "USING(chatroom) GROUP BY product) "
+					+ "USING(product) "
 					// 상품별 댓글 수 계산
-					+ "JOIN (SELECT aproduct.aproduct_num, COUNT(acomment.aproduct_num) AS replies "
-						+ "FROM aproduct LEFT JOIN acomment "
-						+ "ON aproduct.aproduct_num=acomment.aproduct_num "
-						+ "GROUP BY aproduct.aproduct_num) "
-					+ "USING(aproduct_num) "
+					+ "JOIN (SELECT product.product, COUNT(reply.product) AS replies "
+						+ "FROM product LEFT JOIN reply "
+						+ "ON product.product=reply.product "
+						+ "GROUP BY product.product) "
+					+ "USING(product) "
 					// 상품별 관심 수 계산
-					+ "JOIN (SELECT aproduct.aproduct_num, COUNT(amyproduct.aproduct_num) AS likes "
-						+ "FROM aproduct LEFT JOIN amyproduct "
-						+ "ON aproduct.aproduct_num=amyproduct.aproduct_num "
-						+ "GROUP BY aproduct.aproduct_num) "
-					+ "USING(aproduct_num) "
+					+ "JOIN (SELECT product.product, COUNT(myproduct.product) AS likes "
+						+ "FROM product LEFT JOIN myproduct "
+						+ "ON product.product=myproduct.product "
+						+ "GROUP BY product.product) "
+					+ "USING(product) "
 				// 검색 처리
-				+ "WHERE status=2 AND complete=0 " + sub_sql
+				+ "WHERE deleted=0 AND complete=0 " + sub_sql
 				// 정렬
-				+ "ORDER BY aproduct_num DESC) r)"
+				+ "ORDER BY product DESC) r)"
 				// 페이지 처리
 				+ "WHERE rnum >= ? AND rnum <=?";
 			
@@ -206,28 +203,35 @@ public class ProductDAO {
 			
 			if(category!=null && !category.isEmpty()) pstmt.setInt(++bind, Integer.parseInt(category));
 			if(keyword!=null && !keyword.isEmpty()) pstmt.setString(++bind, "%" + keyword + "%");
-			if(address!=null && !address.isEmpty()) pstmt.setString(++bind, "%" + address + "%");
+			if(sido!=null && !sido.isEmpty()) pstmt.setString(++bind, sido);
+			if(sigungu!=null && !sigungu.isEmpty()) pstmt.setString(++bind, sigungu);
+			if(bname!=null && !bname.isEmpty()) pstmt.setString(++bind, bname);
 			pstmt.setInt(++bind, startCount);
 			pstmt.setInt(++bind, endCount);
 			
 			rs = pstmt.executeQuery();
 			list = new ArrayList<ProductVO>();
 			while(rs.next()) {
-				ProductVO vo = new ProductVO();
-				vo.setAproduct_num(rs.getInt("aproduct_num"));
-				vo.setAmember_num(rs.getInt("amember_num"));
-				vo.setPhoto1(rs.getString("photo1"));
-				vo.setTitle(StringUtil.useNoHtml(rs.getString("title"))); // 제목에 HTML 태그를 허용하지 않음
-				vo.setPrice(rs.getInt("price"));
-				vo.setCategory(rs.getInt("category"));
-				vo.setAddress(rs.getString("address"));
-				vo.setChats(rs.getInt("chats"));
-				vo.setReplies(rs.getInt("replies"));
-				vo.setLikes(rs.getInt("likes"));
-				vo.setReg_date(rs.getDate("reg_date"));
-				vo.setModify_date(rs.getDate("modify_date"));
+				ProductVO productVO = new ProductVO();
+				productVO.setProduct(rs.getInt("product"));
+				productVO.setPhoto1(rs.getString("photo1"));
+				productVO.setTitle(StringUtil.useNoHtml(rs.getString("title"))); // 제목에 HTML 태그를 허용하지 않음
+				productVO.setPrice(rs.getInt("price"));
+				productVO.setRegistered(rs.getString("registered"));
+				productVO.setModified(rs.getString("modified"));
+
+				productVO.setChats(rs.getInt("chats"));
+				productVO.setReplies(rs.getInt("replies"));
+				productVO.setLikes(rs.getInt("likes"));
+
+				MemberVO memberVO = new MemberVO();
+				memberVO.setHome(rs.getString("home"));
+				memberVO.setSido(rs.getString("sido"));
+				memberVO.setSigungu(rs.getString("sigungu"));
+				memberVO.setBname(rs.getString("bname"));
+				productVO.setMemberVO(memberVO);
 				
-				list.add(vo);
+				list.add(productVO);
 			}
 		}
 		catch(Exception e) {
