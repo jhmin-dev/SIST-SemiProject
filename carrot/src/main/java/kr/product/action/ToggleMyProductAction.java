@@ -11,7 +11,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import kr.controller.Action;
 import kr.product.dao.ProductDAO;
-import kr.product.vo.MyProductVO;
 
 public class ToggleMyProductAction implements Action {
 
@@ -22,23 +21,21 @@ public class ToggleMyProductAction implements Action {
 		Map<String, String> mapAjax = new HashMap<String, String>();
 		
 		HttpSession session = request.getSession();
-		Integer user_num = (Integer)session.getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)session.getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인되어 있는 경우
 			ProductDAO dao = ProductDAO.getInstance();
 			
-			MyProductVO vo = new MyProductVO();
-			vo.setAproduct_num(Integer.parseInt(request.getParameter("aproduct_num")));
-			vo.setAmember_num(user_num);
+			int product = Integer.parseInt(request.getParameter("product"));
 			
-			if(dao.existsMyProduct(vo)) { // 찜한 상품에 있는 경우
-				dao.deleteMyProduct(vo); // 찜한 상품 목록에서 삭제
+			if(dao.existsMyProduct(product, user)) { // 찜한 상품에 있는 경우
+				dao.deleteMyProduct(product, user); // 찜한 상품 목록에서 삭제
 				mapAjax.put("result", "delete");
 			}
 			else { // 찜한 상품에 없는 경우
-				dao.insertMyProduct(vo); // 찜한 상품 목록에 추가
+				dao.insertMyProduct(product, user); // 찜한 상품 목록에 추가
 				mapAjax.put("result", "insert");
 			}
 		}

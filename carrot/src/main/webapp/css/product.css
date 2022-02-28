@@ -82,3 +82,120 @@
 .add img.thumbnail.hidden {
 	display: none;
 }
+
+/* 물품 상세 정보 */
+.detail {
+	width: 720px;
+	margin: 75px auto 0;
+	padding: 0;
+}
+.detail > li {
+	margin: 0;
+	padding: 5px 10px;
+}
+.detail li img {
+	width: 700px;	
+	height: 700px;
+	border-radius: 20px;
+}
+.detail li img.profile {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+}
+.detail .carousel-control-prev:hover,.detail .carousel-control-next:hover { /* 캐러셀 충돌 방지 */
+	border: 0;
+	background-color: transparent;
+}
+.detail .carousel-indicators button:hover {
+	border: 0;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid transparent;
+	background-color: #fff;
+}
+
+/* 물품 상세 정보 : 판매자 */
+.seller div {
+	flex-grow: 1;
+}
+.seller div {
+	margin: 0;
+	padding: 0 5px;
+}
+.seller .who > div > div {
+	padding: 0 5px;
+}
+.seller .who > div > div:first-child {
+	font-weight: bold;
+	font-size: 1.2rem;
+}
+.seller .who svg.bi {
+	
+	width: 30px;
+	height: 30px;
+	fill: var(--point);
+	transition: fill 0.5s ease;
+}
+.seller .manner .manner-stars i.bi {
+	pointer-events: none; /* 개별 별 아이콘의 hover 효과 제거 */
+}
+
+/* 물품 상세 정보 : 글 */
+.detail .product div {
+	padding-top: 5px;
+}
+.detail .product .content {
+	margin-bottom: 50px;
+}
+.detail .product .content.deleted {
+	padding: 15px 0 0 15px;
+	font-style: italic;
+	color: var(--silver-hover);
+}
+
+/* 물품 상세 정보 : 버튼들 */
+.detail i.bi#like {
+	margin: 5px 0 0;
+	padding: 0 5px;
+	font-size: 3rem;
+}
+.detail i.bi#like.disabled {
+	color: var(--light-gray-hover);
+	cursor: default;
+}
+.detail [type="button"] {
+	margin: 0 5px;
+}
+
+/* 물품 상세 정보 : 실시간 중고 더보기 */
+.list-other {
+	margin: 25px auto;
+	padding: 0;
+	width: 600px;
+}
+.list-other li {
+	margin: 5px;
+	padding: 5px;
+	width: 190px;
+}
+.list-other .flex-column div {
+	margin-top: 5px;
+	padding: 0 10px;
+}
+.list-other li img {
+	margin-bottom: 5px;
+	width: 180px;
+	height: 180px;
+	border-radius: 10px;
+}
+.list-product-title {
+	font-size: 1rem;
+	font-weight: bold;
+}
+.list-other li .price {
+	font-weight: bold;
+	font-size: 1rem;
+}
+.list-other li .info a:hover {
+	color: var(--light-black);
+}

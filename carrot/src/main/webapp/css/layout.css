@@ -318,6 +318,15 @@ i.bi:hover {
 	color: var(--point-hover);
 }
 
+/* 공통 : 매너 평점 */
+.manner-stars i.bi {
+	margin: 0 -2px;
+	padding: 0;
+}
+.manner-stars i.bi.disabled {
+	color: var(--light-gray-hover);
+}
+
 /* 공통 : 상단 바 */
 .header {
 	position: fixed;
@@ -402,7 +411,7 @@ i.bi:hover {
 	flex-wrap: nowrap;
 	justify-content: space-between;	
 }
-.header-profile {
+.header-who .header-profile {
 	margin-left: 15px;
 	/*margin-top: -6px;*/
 	width: 35px;
@@ -412,7 +421,7 @@ i.bi:hover {
 	border: 5px solid var(--light-white);
 	border-radius:50%;
 }
-svg.bi {
+.header-who svg.bi {
 	margin: auto 0 auto 15px;
 	width: 30px;
 	height: 30px;

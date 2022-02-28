@@ -245,8 +245,8 @@ public class ProductDAO {
 	}
 	
 	// 물품 상세 정보
-	public ProductVO getProduct(int aproduct_num) throws Exception {
-		ProductVO product = null;
+	public ProductVO getProduct(int product) throws Exception {
+		ProductVO productVO = null;
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -256,77 +256,80 @@ public class ProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT p.*, m.nickname, m.photo, m.address, m.rate, c.name AS cname, "
-				+ "ch.chats, cmt.replies, my.likes FROM aproduct p "
+			sql = "SELECT p.*, m.nickname, m.profile, m.home, m.sido, m.sigungu, m.bname, m.rate, c.name, "
+				+ "NVL(ch.chats, 0) AS chats, rp.replies, my.likes FROM product p "
 				// 판매자 정보 결합
-				+ "JOIN amember_detail m ON p.amember_num=m.amember_num "
-				// 상품 분류명 결합
-				+ "JOIN acategory c ON p.category=c.category "
+				+ "JOIN member_detail m ON p.member=m.member "
+				// 물품 분류명 결합
+				+ "JOIN category c ON p.category=c.category "
 				// 채팅 수 계산
-				+ "LEFT JOIN (SELECT COUNT(achatroom_num) AS chats, aproduct_num FROM achatroom "
-						+ "JOIN (SELECT COUNT(achat_num), achatroom_num FROM achatroom JOIN achat "
-						+ "USING(achatroom_num) GROUP BY(achatroom_num)) "
-					+ "USING(achatroom_num) GROUP BY aproduct_num) ch "
-				+ "ON p.aproduct_num=ch.aproduct_num "
+				+ "LEFT JOIN (SELECT COUNT(chatroom) AS chats, product FROM chatroom "
+						+ "JOIN (SELECT COUNT(chat), chatroom FROM chatroom JOIN chat "
+						+ "USING(chatroom) GROUP BY(chatroom)) "
+					+ "USING(chatroom) GROUP BY product) ch "
+				+ "ON p.product=ch.product "
 				// 댓글 수 계산
-				+ "JOIN (SELECT aproduct.aproduct_num, COUNT(acomment.aproduct_num) AS replies "
-					+ "FROM aproduct LEFT JOIN acomment "
-					+ "ON aproduct.aproduct_num=acomment.aproduct_num "
-					+ "GROUP BY aproduct.aproduct_num) cmt "
-				+ "ON p.aproduct_num=cmt.aproduct_num "
+				+ "JOIN (SELECT product.product, COUNT(reply.product) AS replies "
+					+ "FROM product LEFT JOIN reply "
+					+ "ON product.product=reply.product "
+					+ "GROUP BY product.product) rp "
+				+ "ON p.product=rp.product "
 				// 관심 상품 수 계산
-				+ "JOIN (SELECT aproduct.aproduct_num, COUNT(amyproduct.aproduct_num) AS likes "
-					+ "FROM aproduct LEFT JOIN amyproduct "
-					+ "ON aproduct.aproduct_num=amyproduct.aproduct_num "
-					+ "GROUP BY aproduct.aproduct_num) my "
-				+ "ON p.aproduct_num=my.aproduct_num "
+				+ "JOIN (SELECT product.product, COUNT(myproduct.product) AS likes "
+					+ "FROM product LEFT JOIN myproduct "
+					+ "ON product.product=myproduct.product "
+					+ "GROUP BY product.product) my "
+				+ "ON p.product=my.product "
 				// 조건절
-				+ "WHERE p.aproduct_num=?";
+				+ "WHERE p.product=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, aproduct_num);
+			pstmt.setInt(1, product);
 			
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
 				// 물품 상세 정보
-				product = new ProductVO();
-				product.setAproduct_num(aproduct_num);
-				product.setAmember_num(rs.getInt("amember_num"));
+				productVO = new ProductVO();
+				productVO.setProduct(product);
+				productVO.setMember(rs.getInt("member"));
 				// 사진
-				product.setPhoto1(rs.getString("photo1"));
-				product.setPhoto2(rs.getString("photo2"));
-				product.setPhoto3(rs.getString("photo3"));
-				product.setPhoto4(rs.getString("photo4"));
-				product.setPhoto5(rs.getString("photo5"));
+				productVO.setPhoto1(rs.getString("photo1"));
+				productVO.setPhoto2(rs.getString("photo2"));
+				productVO.setPhoto3(rs.getString("photo3"));
+				productVO.setPhoto4(rs.getString("photo4"));
+				productVO.setPhoto5(rs.getString("photo5"));
 				// 판매글 정보
-				product.setTitle(rs.getString("title"));
-				product.setContent(rs.getString("content"));
-				product.setReg_date(rs.getDate("reg_date"));
-				product.setModify_date(rs.getDate("modify_date"));
-				product.setPrice(rs.getInt("price"));
+				productVO.setTitle(rs.getString("title"));
+				productVO.setPrice(rs.getInt("price"));
+				productVO.setContent(rs.getString("content"));
+				productVO.setRegistered(rs.getString("registered"));
+				productVO.setModified(rs.getString("modified"));
 				// 채팅, 댓글, 관심
-				product.setChats(rs.getInt("chats"));
-				product.setReplies(rs.getInt("replies"));
-				product.setLikes(rs.getInt("likes"));
+				productVO.setChats(rs.getInt("chats"));
+				productVO.setReplies(rs.getInt("replies"));
+				productVO.setLikes(rs.getInt("likes"));
 				// 판매글 상태
-				product.setComplete(rs.getInt("complete"));
-				product.setStatus(rs.getInt("status"));
-				product.setBuyer_num(rs.getInt("buyer_num"));
+				productVO.setComplete(rs.getInt("complete"));
+				productVO.setDeleted(rs.getInt("deleted"));
+				productVO.setBuyer(rs.getInt("buyer"));
 				
 				// 판매자 정보
 				MemberVO member = new MemberVO();
 				member.setNickname(rs.getString("nickname"));
-				member.setAddress(rs.getString("address"));
-				member.setPhoto(rs.getString("photo"));
+				member.setHome(rs.getString("home"));
+				member.setSido(rs.getString("sido"));
+				member.setSigungu(rs.getString("sigungu"));
+				member.setBname(rs.getString("bname"));
+				member.setProfile(rs.getString("profile"));
 				if(rs.getString("rate")!=null) member.setRate(rs.getDouble("rate"));
-				product.setMemberVO(member);
+				productVO.setMemberVO(member);
 				
 				// 카테고리 정보
 				CategoryVO category = new CategoryVO();
 				category.setCategory(rs.getInt("category"));
-				category.setName(rs.getString("cname"));
-				product.setCategoryVO(category);
+				category.setName(rs.getString("name"));
+				productVO.setCategoryVO(category);
 			}
 		}
 		catch(Exception e) {
@@ -336,7 +339,7 @@ public class ProductDAO {
 			DBUtil.executeClose(rs, pstmt, conn);
 		}
 		
-		return product;
+		return productVO;
 	}
 	
 	// 물품 등록
@@ -401,9 +404,9 @@ public class ProductDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
-
+	*/
 	// 관심 상품 추가
-	public void insertMyProduct(MyProductVO vo) throws Exception {
+	public void insertMyProduct(int product, int member) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
@@ -411,13 +414,13 @@ public class ProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 
-			sql = "INSERT INTO amyproduct (amyproduct_num, aproduct_num, amember_num) "
-				+ "VALUES (amyproduct_seq.NEXTVAL, ?, ?)";
+			sql = "INSERT INTO myproduct (myproduct, product, member) "
+				+ "VALUES (myproduct_seq.NEXTVAL, ?, ?)";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, vo.getAproduct_num());
-			pstmt.setInt(2, vo.getAmember_num());
+			pstmt.setInt(1, product);
+			pstmt.setInt(2, member);
 			
 			pstmt.executeUpdate();
 		}
@@ -430,7 +433,7 @@ public class ProductDAO {
 	}
 	
 	// 관심 상품 존재 확인
-	public boolean existsMyProduct(MyProductVO vo) throws Exception {
+	public boolean existsMyProduct(int product, int member) throws Exception {
 		boolean exist = false;
 		
 		Connection conn = null;
@@ -441,12 +444,12 @@ public class ProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT * FROM amyproduct WHERE aproduct_num=? AND amember_num=?";
+			sql = "SELECT myproduct FROM myproduct WHERE product=? AND member=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, vo.getAproduct_num());
-			pstmt.setInt(2, vo.getAmember_num());
+			pstmt.setInt(1, product);
+			pstmt.setInt(2, member);
 			
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -464,7 +467,7 @@ public class ProductDAO {
 	}
 	
 	// 관심 상품 삭제
-	public void deleteMyProduct(MyProductVO vo) throws Exception {
+	public void deleteMyProduct(int product, int member) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
@@ -472,12 +475,12 @@ public class ProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "DELETE FROM amyproduct WHERE aproduct_num=? AND amember_num=?";
+			sql = "DELETE FROM myproduct WHERE product=? AND member=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, vo.getAproduct_num());
-			pstmt.setInt(2, vo.getAmember_num());
+			pstmt.setInt(1, product);
+			pstmt.setInt(2, member);
 			
 			pstmt.executeUpdate();
 		}
@@ -488,5 +491,5 @@ public class ProductDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
-	*/
+
 }

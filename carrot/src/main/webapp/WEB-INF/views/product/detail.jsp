@@ -6,60 +6,62 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>물품 상세 정보 : ${product.title}</title>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
+<title>물품 상세 정보 : ${productVO.title}</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap.carousel.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jhmin.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/product.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/reply.css">
 <script src="${pageContext.request.contextPath}/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
 <div class="page-main">
 	<ul class="detail flex-column">
-		<c:if test="${product.status==2}">
+<!-- 물품 사진 캐러셀 시작 -->
+		<c:if test="${productVO.deleted==0}">
 		<li>
 			<div id="carousel" class="carousel slide" data-bs-ride="carousel">
 				<div class="carousel-indicators">
 					<button type="button" data-bs-target="#carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-					<c:if test="${!empty product.photo2}">
+					<c:if test="${!empty productVO.photo2}">
 					<button type="button" data-bs-target="#carousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
 					</c:if>
-					<c:if test="${!empty product.photo3}">
+					<c:if test="${!empty productVO.photo3}">
 					<button type="button" data-bs-target="#carousel" data-bs-slide-to="2" aria-label="Slide 2"></button>
 					</c:if>
-					<c:if test="${!empty product.photo4}">
+					<c:if test="${!empty productVO.photo4}">
 					<button type="button" data-bs-target="#carousel" data-bs-slide-to="3" aria-label="Slide 2"></button>
 					</c:if>
-					<c:if test="${!empty product.photo5}">
+					<c:if test="${!empty productVO.photo5}">
 					<button type="button" data-bs-target="#carousel" data-bs-slide-to="4" aria-label="Slide 2"></button>
 					</c:if>
 				</div>	
 				<div class="carousel-inner">
 					<div class="carousel-item active">
-						<img class="d-block w-100"  src="${pageContext.request.contextPath}/upload/${product.photo1}">
+						<img class="d-block w-100"  src="${pageContext.request.contextPath}/upload/${productVO.photo1}">
 					</div>
-					<c:if test="${!empty product.photo2}">
+					<c:if test="${!empty productVO.photo2}">
 					<div class="carousel-item">
-						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${product.photo2}">
-					</div>
-					</c:if>
-					<c:if test="${!empty product.photo3}">
-					<div class="carousel-item">
-						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${product.photo3}">
+						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${productVO.photo2}">
 					</div>
 					</c:if>
-					<c:if test="${!empty product.photo4}">
+					<c:if test="${!empty productVO.photo3}">
 					<div class="carousel-item">
-						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${product.photo4}">
+						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${productVO.photo3}">
 					</div>
 					</c:if>
-					<c:if test="${!empty product.photo5}">
+					<c:if test="${!empty productVO.photo4}">
 					<div class="carousel-item">
-						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${product.photo5}">
+						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${productVO.photo4}">
+					</div>
+					</c:if>
+					<c:if test="${!empty productVO.photo5}">
+					<div class="carousel-item">
+						<img class="d-block w-100" src="${pageContext.request.contextPath}/upload/${productVO.photo5}">
 					</div>
 					</c:if>
 				</div>
-				<c:if test="${!empty product.photo2}">
+				<c:if test="${!empty productVO.photo2}">
 				<button class="carousel-control-prev" type="button" data-bs-target="#carousel" data-bs-slide="prev">
 					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 					<span class="visually-hidden">Previous</span>
@@ -72,24 +74,23 @@
 			</div>
 		</li>
 		</c:if>
+<!-- 물품 사진 캐러셀 끝 -->
 <!-- 판매자 프로필, 매너 평가 시작 -->
 		<li class="seller">
-			<c:if test="${product.amember_num == user_num}">
-				<a class="flex-row space-between" href="${pageContext.request.contextPath}/member/myMannerProfile.do?seller_num=${product.amember_num}">
-			</c:if>
-			<c:if test="${product.amember_num != user_num}">
-				<a class="flex-row space-between" href="${pageContext.request.contextPath}/seller/Profile.do?seller_num=${product.amember_num}">
-			</c:if>
+			<a class="flex-row space-between" href="#">
 				<div class="who flex-row">
-					<c:if test="${empty seller.photo}">
-					<img class="profile" src="${pageContext.request.contextPath}/images/face.png">
+					<c:if test="${empty sellerVO.profile}">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+						<path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+						<path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+					</svg>
 					</c:if>
-					<c:if test="${!empty seller.photo}">
-					<img class="profile" src="${pageContext.request.contextPath}/upload/${seller.photo}">
+					<c:if test="${!empty sellerVO.profile}">
+					<img class="profile" src="${pageContext.request.contextPath}/upload/${sellerVO.photo}">
 					</c:if>	
 					<div class="flex-column justify-end">
-						<div>${seller.nickname}</div>
-						<div>${seller.address}</div>
+						<div>${sellerVO.nickname}</div>
+						<div>${sellerVO.home}</div>
 					</div>
 				</div>
 				<div class="manner flex-column justify-end align-end">
@@ -100,7 +101,7 @@
 						<i class="bi bi-star"></i>
 						<i class="bi bi-star"></i>
 					</div>
-					<div class="gray underline">매너 평점 <span class="bold">${seller.rate}</span></div>
+					<div class="gray underline">매너 평점 <span class="bold">${sellerVO.rate}</span></div>
 				</div>
 			</a>
 		</li>
@@ -108,27 +109,27 @@
 <!-- 판매자 프로필, 매너 평가 끝 -->
 <!-- 물품 판매글 시작 -->
 		<li class="product flex-column">
-			<div class="title">${product.title}</div>
+			<div class="title">${productVO.title}</div>
 			<div class="gray">
-				<a class="underline" href="${pageContext.request.contextPath}/main/main.do?category=${category.category}">${category.name}</a> · 
-				<c:if test="${empty product.modify_date}">${product.reg_date}</c:if>
-				<c:if test="${!empty product.modify_date}">${product.modify_date}</c:if>
-				<c:if test="${product.status==2 && !empty product.modify_date}"> · 수정됨</c:if>
-				<c:if test="${product.status!=2}"> · 삭제됨</c:if>
+				<a class="underline" href="${pageContext.request.contextPath}/main/main.do?category=${categoryVO.category}">${categoryVO.name}</a> · 
+				<c:if test="${empty productVO.modified}">${productVO.registered}</c:if>
+				<c:if test="${!empty productVO.modified}">${productVO.modified}</c:if>
+				<c:if test="${productVO.deleted==0 && !empty productVO.modified}"> · 수정됨</c:if>
+				<c:if test="${productVO.deleted==1}"> · 삭제됨</c:if>
 			</div>
-			<c:if test="${product.status==2}">
+			<c:if test="${productVO.deleted==0}">
 			<div class="subtitle">
-				<c:if test="${product.price>0}">
-				<fmt:formatNumber value="${product.price}"/>원
+				<c:if test="${productVO.price>0}">
+				<fmt:formatNumber value="${productVO.price}"/>원
 				</c:if>
-				<c:if test="${product.price==0}">
+				<c:if test="${productVO.price==0}">
 				나눔
 				</c:if>
 			</div>
-			<div class="content">${product.content}</div>
-			<div class="gray"><a id="toggle_comments">댓글 <span id="current_replies">${product.replies}</span></a> · 채팅 ${product.chats} · 관심 <span id="current_likes">${product.likes}</span></div>
+			<div class="content">${productVO.content}</div>
+			<div class="gray"><a id="toggle_comments">댓글 <span id="current_replies">${productVO.replies}</span></a> · 채팅 ${productVO.chats} · 관심 <span id="current_likes">${productVO.likes}</span></div>
 			</c:if>
-			<c:if test="${product.status!=2}">
+			<c:if test="${productVO.deleted==1}">
 			<div class="content deleted">삭제된 물품입니다.</div>
 			</c:if>
 		</li>
@@ -144,19 +145,19 @@
 			</c:if>
 			<div class="other">
 				<input type="button" class="big" value="이전으로" onclick="history.go(-1);">
-				<c:if test="${product.status==2}">
+				<c:if test="${productVO.deleted==0}">
 				<c:choose>
-					<c:when test="${user_num==product.amember_num}">
-					<c:if test="${product.complete!=1}">
+					<c:when test="${user==productVO.member}">
+					<c:if test="${productVO.complete==0}">
 					<input type="button" class="big point" value="거래 완료하기" id="complete" onclick="location.href = '${pageContext.request.contextPath}/chat/chat.do?filter=2';">
 					</c:if>
-					<input type="button" class="big point" value="물품 수정하기" onclick="location.href = 'modifyForm.do?aproduct_num=${product.aproduct_num}';" <c:if test="${product.complete==1}">disabled</c:if>>
+					<input type="button" class="big point" value="물품 수정하기" onclick="location.href = 'modifyForm.do?product=${productVO.product}';" <c:if test="${productVO.complete==1}">disabled</c:if>>
 					</c:when>
-					<c:when test="${user_num==product.buyer_num}">
-					<input type="button" class="big point" value="거래 후기 남기기" onclick="location.href = '${pageContext.request.contextPath}/member/MannerWriteForm.do?aproduct_num=${product.aproduct_num}&seller_num=${product.amember_num}&buyer_num=${user_num}';">
+					<c:when test="${user==productVO.buyer}">
+					<input type="button" class="big point" value="거래 후기 남기기" onclick="">
 					</c:when>
 					<c:otherwise>
-					<input type="button" class="big point" value="채팅으로 거래하기" id="link_chatroom" <c:if test="${empty user_num || product.complete==1}">disabled</c:if> <c:if test="${empty user_num}">title="로그인 후 채팅으로 거래할 수 있습니다"</c:if>>
+					<input type="button" class="big point" value="채팅으로 거래하기" id="link_chatroom" <c:if test="${empty user || productVO.complete==1}">disabled</c:if> <c:if test="${empty user}">title="로그인 후 채팅으로 거래할 수 있습니다"</c:if>>
 					</c:otherwise>
 				</c:choose>
 				</c:if>
@@ -169,8 +170,8 @@
 			<button type="button" class="comment-more reverse-silver hide">댓글 더보기</button>
 			<div class="modal" id="modify_area">
 				<div class="modal-content flex-column">
-					<textarea name="content" <c:if test="${empty user_num}">disabled title="로그인 후 댓글을 수정할 수 있습니다"</c:if>></textarea>
-					<input type="button" class="point" value="댓글 수정" id="modify_comment" <c:if test="${empty user_num}">disabled title="로그인 후 댓글을 수정할 수 있습니다"</c:if>>
+					<textarea name="content" <c:if test="${empty user}">disabled title="로그인 후 댓글을 수정할 수 있습니다"</c:if>></textarea>
+					<input type="button" class="point" value="댓글 수정" id="modify_comment" <c:if test="${empty user}">disabled title="로그인 후 댓글을 수정할 수 있습니다"</c:if>>
 				</div>
 			</div>
 			<ul>
@@ -179,8 +180,8 @@
 		</li>
 		<li class="comment-list hide"><hr></li>
 		<li class="comment-write hide flex-row justify-center align-start">
-			<textarea name="content" <c:if test="${empty user_num}">disabled title="로그인 후 댓글을 작성할 수 있습니다"</c:if>></textarea>
-			<input type="button" class="point" value="댓글 작성" id="write_comment" <c:if test="${empty user_num}">disabled title="로그인 후 댓글을 작성할 수 있습니다"</c:if>>
+			<textarea name="content" <c:if test="${empty user}">disabled title="로그인 후 댓글을 작성할 수 있습니다"</c:if>></textarea>
+			<input type="button" class="point" value="댓글 작성" id="write_comment" <c:if test="${empty user}">disabled title="로그인 후 댓글을 작성할 수 있습니다"</c:if>>
 		</li>
 		<li class="comment-write hide"><hr></li>
 <!-- 댓글 끝 -->
@@ -188,9 +189,9 @@
 		<li>
 			<div class="title">실시간 중고 더보기</div>
 			<ul class="list-other flex-row space-between">
-				<c:forEach var="other" items="${listProduct}">
-				<li>
-					<a class="flex-column" href="${pageContext.request.contextPath}/product/detail.do?aproduct_num=${other.aproduct_num}">
+				<c:forEach var="other" items="${list}">
+				<li class="flex-column">
+					<a class="flex-column" href="${pageContext.request.contextPath}/product/detail.do?product=${other.product}">
 					<img src="${pageContext.request.contextPath}/upload/${other.photo1}">
 					<div class="list-product-title ellipsis">${other.title}</div>
 					<div class="price">
@@ -201,11 +202,11 @@
 						<fmt:formatNumber value="${other.price}"/>원
 						</c:if>
 					</div>
-					<div class="address">${other.address}</div>
+					</a>
+					<div class="info"><a href="${pageContext.request.contextPath}/main/main.do?sido=${other.memberVO.sido}&sigungu=${other.memberVO.sigungu}&bname=${other.memberVO.bname}">${other.memberVO.bname}</a> · <span class="time" data-registered="${other.registered}" data-modified="${other.modified}"></span></div>
 					<div class="info gray">
 						관심 ${other.likes} · 댓글 ${other.replies} · 채팅 ${other.chats}
 					</div>
-					</a>
 				</li>
 				</c:forEach>
 			</ul>
@@ -221,7 +222,7 @@
 	
 	// 매너 평점 처리
 	let stars = document.querySelectorAll('.manner-stars i.bi');
-	let seller_rate = '${seller.rate}';
+	let seller_rate = '${sellerVO.rate}';
 	if(!seller_rate) {
 		for(let i=0;i<stars.length;i++) {
 			if(i<2) stars[i].classList.replace('bi-star', 'bi-star-fill');
@@ -237,6 +238,20 @@
 		}
 	}
 	
+	// 실시간 중고 더보기에서 수정 또는 등록 시간 처리
+	let times = document.querySelectorAll('.list-other span.time');
+	for(let i=0;i<times.length;i++) {
+		if(!times[i].dataset.modified) {
+			times[i].textContent = getTimeSince(times[i].dataset.registered);
+			times[i].title = times[i].dataset.registered;
+		}
+		else {
+			times[i].textContent = '수정 ' + getTimeSince(times[i].dataset.modified);
+			times[i].title = times[i].dataset.modified;
+		}
+	}
+	
+/*	
 	// 댓글 토글
 	let comment_lists = document.getElementsByClassName('comment-list');
 	let comment_writes = document.getElementsByClassName('comment-write');
@@ -265,7 +280,7 @@
 		let toggle_reply = event.target.closest('.comment-toggle-reply'); // 이벤트가 발생한 태그의 가장 가까운 조상 .comment-toggle-reply를 찾고
 		if(toggle_reply && toggle_reply.contains(event.target)) { // 이벤트가 발생한 태그가 앞서 찾은 가장 가까운 조상 태그 자기 자신이거나 그 자식 태그이면
 			// 로그인하지 않은 경우 UI 토글 이벤트 중단
-			if(${empty user_num}) return;
+			if(${empty user}) return;
 			
 			// 대댓글 작성 UI를 삽입할 <ul> 태그 얻기
 			let reply = document.querySelector('#reply_area');
@@ -334,7 +349,7 @@
 		let comment_modify = event.target.closest('.comment-modify'); // 이벤트가 발생한 태그의 가장 가까운 조상 .comment-modify를 찾고
 		if(comment_modify && comment_modify.contains(event.target)) { // 이벤트가 발생한 태그가 앞서 찾은 가장 가까운 조상 태그 자기 자신이거나 그 자식 태그이면
 			// 로그인하지 않은 경우 수정 UI 모달 여는 이벤트 중단
-			if(${empty user_num}) return;
+			if(${empty user}) return;
 			
 			// 수정 UI 모달 열기
 			let modify = comment_modify.parentNode.parentNode.parentNode;
@@ -357,7 +372,7 @@
 	// 댓글 수정
 	let modify_comment = document.getElementById('modify_comment');
 	modify_comment.addEventListener('click', function(event) {
-		let acomment_num = modify_area.dataset.comment;
+		let acomment = modify_area.dataset.comment;
 		let content = modify_area.querySelector('textarea');
 
 		if(!content.value.trim()) return;
@@ -366,7 +381,7 @@
 			url:'modifyComment.do',
 			type:'post',
 			data:{
-				acomment_num:acomment_num,
+				acomment:acomment,
 				content:content.value
 			},
 			dataType:'json',
@@ -376,7 +391,7 @@
 					alert('로그인 후 댓글을 삭제할 수 있습니다!');	
 				}
 				else if(param.result=='success') {
-					let comment = document.querySelector('li[data-comment="' + acomment_num +'"]'); 
+					let comment = document.querySelector('li[data-comment="' + acomment +'"]'); 
 					comment.querySelector('.comment-time').textContent = getTimeSince(new Date(param.modify_date)) + ' · 수정됨'; // 댓글 시간 변경
 					comment.querySelector('.comment-time').title = param.modify_date;
 					comment.querySelector('.comment-content').innerHTML = content.value.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>'); // 수정 후 댓글 내용 변경; 태그 비허용하고 줄바꿈 인정 처리
@@ -400,14 +415,14 @@
 		let comment_delete = event.target.closest('.comment-delete'); // 이벤트가 발생한 태그의 가장 가까운 조상 .comment-delete를 찾고
 		if(comment_delete && comment_delete.contains(event.target)) { // 이벤트가 발생한 태그가 앞서 찾은 가장 가까운 조상 태그 자기 자신이거나 그 자식 태그이면
 			// 로그인하지 않은 경우 UI 토글 이벤트 중단
-			if(${empty user_num}) return;
+			if(${empty user}) return;
 		
 			// 한 번 더 확인
 			if(!confirm('정말로 삭제하시겠습니까?')) return;
 			$.ajax({
 				url:'deleteComment.do',
 				type:'post',
-				data:{acomment_num:comment_delete.parentNode.parentNode.parentNode.dataset.comment},
+				data:{acomment:comment_delete.parentNode.parentNode.parentNode.dataset.comment},
 				dataType:'json',
 				timeout:10000,
 				success:function(param) {
@@ -441,7 +456,7 @@
 			url:'writeComment.do',
 			type:'post',
 			data:{
-				aproduct_num:${param.aproduct_num},
+				product:${param.product},
 				content:content.value,
 				acomment_parent:acomment_parent
 				},
@@ -489,7 +504,7 @@
 			type:'post',
 			data:{
 				pageNum:pageNum,
-				aproduct_num:${param.aproduct_num}
+				product:${param.product}
 			},
 			dataType:'json',
 			timeout:10000,
@@ -513,14 +528,14 @@
 						let comment_profile = item.memberVO.photo==null ? '/images/face.png' : '/upload/' + item.memberVO.photo;
 						
 						// 판매자 확인
-						let seller_tag = ${product.amember_num}==item.amember_num ? '<span class="seller-tag">판매자</span>' : '';
+						let seller_tag = ${productVO.member}==item.member ? '<span class="seller-tag">판매자</span>' : '';
 						
 						// 수정 여부 확인
 						let modified = item.modify_date==null ? '' : ' · 수정됨'; 
 						let modify_date = item.modify_date==null ? item.reg_date : item.modify_date; 
 
 						// 댓글이 담긴 태그 만들기
-						let comment = '<li class="flex-row align-start" data-comment="' + item.acomment_num + '">';
+						let comment = '<li class="flex-row align-start" data-comment="' + item.acomment + '">';
 						// 프로필에 매너 평가 확인 페이지로 이동하는 링크 추가
 						comment += '	<img class="profile" src="' + cp + comment_profile + '">';
 						comment += '	<div class="comment-text flex-column">';
@@ -530,8 +545,8 @@
 						else {
 							comment += '		<div class="comment-content">' + item.content + '</div>';
 							comment += '		<div class="comment-menu flex-row">';
-							comment += '			<a class="comment-toggle-reply" data-parent="' + item.acomment_num + '" <c:if test="${empty user_num}">title="로그인 후 댓글을 작성할 수 있습니다"</c:if>><i class="bi bi-reply"></i>답글 쓰기</a>';
-							if('${user_num}'==item.amember_num) {
+							comment += '			<a class="comment-toggle-reply" data-parent="' + item.acomment + '" <c:if test="${empty user}">title="로그인 후 댓글을 작성할 수 있습니다"</c:if>><i class="bi bi-reply"></i>답글 쓰기</a>';
+							if('${user}'==item.member) {
 								comment += '		<a class="comment-modify"><i class="bi bi-pencil-square"></i>수정하기</a>';
 								comment += '		<a class="comment-delete"><i class="bi bi-trash3-fill"></i>삭제하기</a>';
 							}
@@ -544,7 +559,7 @@
 						$('.comment-list > ul').prepend(comment); // <ul> 태그 안에 최신 댓글이 아래로 오도록 대댓글 추가
 						
 						// 현재 댓글의 대댓글 목록 새로고침
-						getListReply(item.acomment_num);
+						getListReply(item.acomment);
 
 					}); // end of each
 					
@@ -575,7 +590,7 @@
 			type:'post',
 			data:{
 				acomment_parent:acomment_parent,
-				aproduct_num:${param.aproduct_num}
+				product:${param.product}
 			},
 			dataType:'json',
 			timeout:10000,
@@ -596,14 +611,14 @@
 						let comment_profile = item.memberVO.photo==null ? '/images/face.png' : '/upload/' + item.memberVO.photo;
 						
 						// 판매자 확인
-						let seller_tag = ${product.amember_num}==item.amember_num ? '<span class="seller-tag">판매자</span>' : '';
+						let seller_tag = ${productVO.member}==item.member ? '<span class="seller-tag">판매자</span>' : '';
 						
 						// 수정 여부 확인
 						let modified = item.modify_date==null ? '' : ' · 수정됨'; 
 						let modify_date = item.modify_date==null ? item.reg_date : item.modify_date;
 						
 						// 대댓글이 담긴 태그 만들기
-						let reply = '<li class="flex-row align-start" data-comment="' + item.acomment_num + '">';
+						let reply = '<li class="flex-row align-start" data-comment="' + item.acomment + '">';
 						// 프로필에 매너 평가 확인 페이지로 이동하는 링크 추가
 						reply += '	<img class="profile" src="' + cp + comment_profile + '">';
 						reply += '	<div class="comment-text flex-column">';
@@ -611,8 +626,8 @@
 						reply += '		<div class="comment-info"><span title="' + item.memberVO.address + '">' + getLastToken(item.memberVO.address, ' ') + '</span> · <span class="comment-time" title="' + modify_date + '">' + getTimeSince(modify_date) + modified + '</span></div>';
 						reply += '		<div class="comment-content">' + item.content + '</div>';
 						reply += '			<div class="comment-menu flex-row">';
-						reply += '			<a class="comment-toggle-reply" data-parent="' + acomment_parent + '" <c:if test="${empty user_num}">title="로그인 후 댓글을 작성할 수 있습니다"</c:if>><i class="bi bi-reply"></i>답글 쓰기</a>'; // 부모 댓글 번호를 유지
-						if('${user_num}'==item.amember_num) {
+						reply += '			<a class="comment-toggle-reply" data-parent="' + acomment_parent + '" <c:if test="${empty user}">title="로그인 후 댓글을 작성할 수 있습니다"</c:if>><i class="bi bi-reply"></i>답글 쓰기</a>'; // 부모 댓글 번호를 유지
+						if('${user}'==item.member) {
 							reply += '		<a class="comment-modify"><i class="bi bi-pencil-square"></i>수정하기</a>';
 							reply += '		<a class="comment-delete"><i class="bi bi-trash3-fill"></i>삭제하기</a>';
 						}
@@ -633,18 +648,18 @@
 			}
 		}); // end of ajax
 	} // end of getListComment
-
+*/
 	// 관심 물품 토글
 	let like_btn = document.getElementById('like');
 	let current_likes = document.getElementById('current_likes');
-	if(${empty user_num || product.status==1}) like_btn.classList.add('disabled');
+	if(${empty user || productVO.deleted==1}) like_btn.classList.add('disabled');
 	like_btn.addEventListener('click', function() {
 		if(like_btn.classList.contains('disabled')) return; // 버튼 비활성화된 경우 함수 실행 종료
 		
 		$.ajax({
 			url:'toggleMyProduct.do',
 			type:'post',
-			data:{aproduct_num:${product.aproduct_num}},
+			data:{product:${productVO.product}},
 			dataType:'json',
 			timeout:10000,
 			success:function(param) {
@@ -670,7 +685,7 @@
 			}
 		}); // end of ajax
 	}, false); // end of addEventListener
-	
+	/*
 	// 채팅방 연결
 	let link_chatroom = document.getElementById('link_chatroom');
 	if(link_chatroom!=null) {
@@ -679,8 +694,8 @@
 				url:cp + '/chat/linkChatRoom.do',
 				type:'post',
 				data:{
-					aproduct_num:${product.aproduct_num},
-					seller_num:${product.amember_num}
+					product:${productVO.product},
+					seller:${productVO.member}
 				},
 				dataType:'json',
 				timeout:10000,
@@ -689,7 +704,7 @@
 						alert('로그인 후 채팅할 수 있습니다!');
 					}
 					else if(param.result=='success') {
-						location.href = cp + '/chat/chat.do?achatroom_num=' + param.achatroom_num;
+						location.href = cp + '/chat/chat.do?chatroom=' + param.chatroom;
 					}
 					else {
 						alert('채팅방을 불러오는 데 실패했습니다!');
@@ -701,6 +716,7 @@
 			})
 		}, false); // end of addEventListener
 	} // end of if
+	*/
 </script>
 </body>
 </html>
