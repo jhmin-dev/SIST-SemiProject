@@ -44,14 +44,25 @@ public class LoginAction implements Action {
 			memberVO = dao.getMember(memberVO); // 회원 상세 정보 조회
 			session.setAttribute("nickname", memberVO.getNickname());
 			session.setAttribute("profile", memberVO.getProfile());
-			if(memberVO.getMain()!=null) { // 선호 동네가 있으면
-				session.setAttribute("main", memberVO.getMain());				
+			
+			// 로그인한 사용자의 동네 필터링을 위한 정보 처리
+			String sido = null;
+			String sigungu = null;
+			String bname = null;
+			if(memberVO.getMain()!=null) { // 선호 동네를 설정한 경우
+				String[] mains = memberVO.getMain().split(" ");
+				sido = mains[0];
+				if(mains.length>1) sigungu = mains[1];
+				if(mains.length>2) bname = mains[2];
 			}
-			else { // 선호 동네가 없으면
-				session.setAttribute("sido", memberVO.getSido());
-				session.setAttribute("sigungu", memberVO.getSigungu());
-				session.setAttribute("bname", memberVO.getBname());				
+			else { // 선호 동네를 설정하지 않은 경우
+				sido = memberVO.getSido();
+				sigungu = memberVO.getSigungu();
+				bname = memberVO.getBname();
 			}
+			session.setAttribute("sido", sido);
+			session.setAttribute("sigungu", sigungu);
+			session.setAttribute("bname", bname);
 			
 			mapAjax.put("result", "success");
 		}

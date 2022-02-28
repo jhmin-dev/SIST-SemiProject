@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import kr.controller.Action;
 import kr.product.dao.ProductDAO;
@@ -41,18 +42,11 @@ public class MainAction implements Action{
 		String bname = request.getParameter("bname");
 		
 		// 로그인한 사용자의 동네 필터링
-		if(request.getParameter("sido")==null) { // 동네로 검색하지 않았을 때
-			if(request.getSession().getAttribute("main")!=null) { // 선호 동네를 설정한 경우
-				String[] mains = ((String)request.getSession().getAttribute("main")).split(" ");
-				sido = mains[0];
-				if(mains.length>1) sigungu = mains[1];
-				if(mains.length>2) bname = mains[2];
-			}
-			else { // 선호 동네를 설정하지 않은 경우
-				sido = (String)request.getSession().getAttribute("sido");
-				sigungu = (String)request.getSession().getAttribute("sigungu");
-				bname = (String)request.getSession().getAttribute("bname");
-			}
+		HttpSession session = request.getSession();
+		if(sido==null && session.getAttribute("user")!=null) { // 동네로 검색하지 않았고 로그인 중이면
+			sido = (String)session.getAttribute("sido");
+			sigungu = (String)session.getAttribute("sigungu");
+			bname = (String)session.getAttribute("bname");
 			
 			// 로그인한 사용자의 선호 동네 혹은 거주 동네로 설정된 법정동/리에 물품이 없으면 시/군/구 단위로 검색하도록 처리
 			if(bname!=null && dao.getCountProduct(category, keyword, sido, sigungu, bname)==0) bname = null;

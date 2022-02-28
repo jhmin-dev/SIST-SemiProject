@@ -10,7 +10,6 @@ import kr.controller.Action;
 import kr.member.vo.MemberVO;
 import kr.product.dao.ProductDAO;
 import kr.product.vo.CategoryVO;
-import kr.product.vo.MyProductVO;
 import kr.product.vo.ProductVO;
 import kr.util.StringUtil;
 
@@ -37,14 +36,21 @@ public class DetailAction implements Action {
 		request.setAttribute("categoryVO", categoryVO);
 
 		// 관심 상품 정보
-		Integer user = (Integer)request.getSession().getAttribute("user");
+		HttpSession session = request.getSession();
+		Integer user = (Integer)session.getAttribute("user");
 		if(user!=null) { // 로그인한 경우
 			boolean exist = dao.existsMyProduct(product, user);
 			request.setAttribute("exist", exist);
 		}
 
 		// 실시간 중고 더보기
-		List<ProductVO> list = dao.getListProduct(1, 6, null, null, null, null, null);
+		List<ProductVO> list = dao.getListProduct(1, 7, null, null, (String)session.getAttribute("sido"), (String)session.getAttribute("sigungu"), null); // (로그인한 경우에는 시/군/구 수준까지 검색하여) 최신 7건의 목록 가져오기
+		int self = -1;
+		for(int i=0;i<list.size();i++) {
+			if(list.get(i).getProduct()==product) self = i;
+		}
+		if(self>-1) list.remove(self); // 자기 자신이 목록에 포함되어 있으면 자기 자신을 제외하고
+		else list.remove(list.size()-1); // 자기 자신이 목록에 포함되어 있지 않으면 가장 오래된 물품을 제외하기
 		request.setAttribute("list", list);
 		
 		// JSP 경로 반환
