@@ -25,6 +25,12 @@
 	--silver: #C0C0C0;
 	--silver-hover: #B0B0B0;
 }
+body {
+	color: var(--light-black);
+}
+.gray { /* 자식 태그까지 적용해야 하는 곳이 있었나? */
+	color: var(--gray);
+}
 
 /* 공통 : 레이아웃 */
 * {
@@ -39,24 +45,277 @@ html {
 body {
 	margin: 0;
 	padding: 0;
-	color: var(--light-black);
 }
 .page-main {
 	margin: 0 auto;
 	padding-top: 80px;
 	width: 1200px;
 }
+ul {
+	margin: 0 auto;
+	padding: 0;
+	list-style: none;
+}
+.flex-column {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.flex-row {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+}
+.space-between {
+	justify-content: space-between;
+}
+.space-evenly {
+	justify-content: space-evenly;
+}
+.justify-center {
+	justify-content: center;
+}
+.justify-start {
+	justify-content: flex-start;
+}
+.justify-end {
+	justify-content: flex-end;
+}
+.align-start {
+	align-items: flex-start;
+}
+.align-end {
+	align-items: flex-end;
+}
+input,select,textarea {
+	margin: 10px;
+	padding: 10px;
+	border: 3px solid var(--light-gray);
+	border-radius: 3px;
+	font-size: 1rem;
+}
+option {
+	font-size: 1rem;
+}
+input:focus,textarea:focus,select:focus {
+	outline-color: var(--point);
+}
+
+/* 공통 : 모달 */
+.modal {
+	z-index: 20; /* 상단 바의 z-index가 10이므로 더 높은 값 사용 */
+	position: absolute; 
+	top: 0; 
+	left: 0; 
+	width: 100%; 
+	min-height: 100vh;
+	display: none; 
+	background-color: rgba(0, 0, 0, 0.4);
+}
+.modal.show {
+	display: block; 
+}
+.modal-content { 
+	position: absolute; 
+	top: 20%; 
+	left: 50%;
+	padding: 25px; 
+	text-align: center; 
+	background-color: var(--light-white); 
+	border-radius: 10px; 
+	box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.15); 
+	transform: translateX(-50%) translateY(-20%);
+}
+
+/* 공통 : 경고 메시지 */
+.caution {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 5px;
+	font-size: 1rem;
+	color: var(--gray);
+}
+.caution i.bi {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 1rem;
+	color: inherit;
+	cursor: text;
+}
+.caution.hide {
+	display: none;
+}
+.caution.called {
+	color: var(--point);
+}
+
+/* 공통 : 꾸미기 */
 a {
 	text-decoration: none;
 }
 a:link,a:hover,a:visited {
 	color: inherit;
 }
-ul{
-	list-style: none;
+.page-main a:hover {
+	text-decoration: none;
+	color: var(--gray-hover);
+	cursor: pointer;
 }
-input,textarea,select,option {
+hr {
+	margin: 0 auto;
+	padding: 0;
+	border-style: solid;
+	background-color: var(--light-gray); /* 설정하지 않으면 크롬에서는 테두리가 있는 선이 생김 */
+	color: var(--light-gray);
+}
+.title {
+	font-family: 'IM_Hyemin-Bold';
+	font-size: 2rem;
+	font-weight: bold;
+	color: var(--point);
+}
+.subtitle {
+	font-size: 1.2rem;
+	font-weight: bold;
+}
+.info {
+	font-size: 0.8rem;
+}
+.bold {
+	font-weight: bold;
+}
+.underline {
+	text-decoration: underline;
+}
+.ellipsis {
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+img {
+	object-fit: cover;
+	object-position: center;
+	background-color: var(--light-white);
+}
+
+/* 공통: 페이징 버튼 */
+.paging a {
 	font-size: 1rem;
+	font-weight: bold;
+	display: inline-block;
+	margin: 5px 0;
+	padding: 10px 15px;
+	border-radius: 10px;
+	color: var(--light-black);
+	background: var(--light-gray);
+	transition: all 0.5s ease;
+	cursor: pointer;
+}
+.paging a:hover {
+	background: var(--light-gray-hover);
+}
+.paging span {
+	font-size: 1rem;
+	font-weight: bold;
+	display: inline-block;
+	margin: 5px 0;
+	padding: 10px 15px;
+	border-radius: 10px;
+	color: var(--light-white) !important;
+	background: var(--point);
+	cursor: default;
+}
+
+/* 공통: 텍스트 버튼 */
+input[type="button"],input[type="submit"],button {
+	font-size: 1rem;
+	font-weight: bold;
+	margin: 0 10px;
+	padding: 10px;
+	border-radius: 5px;
+	color: var(--light-black);
+	border: 3px solid var(--light-gray);
+	background-color: var(--light-gray);
+	transition: all 0.5s ease;
+	cursor: pointer;
+}
+input[type="button"]:not(:disabled):hover,button:not(:disabled):hover {
+	border: 3px solid var(--light-gray-hover);
+	background-color: var(--light-gray-hover);
+}
+input[type="button"]:disabled,button:disabled {
+	color: #aaa;
+	cursor: default;
+}
+input[type="button"].big,button.big {
+	font-size: 1.2rem;
+	font-weight: bold;
+	padding: 15px;
+	border-radius: 5px;
+	color: var(--light-black);
+	border: 3px solid var(--light-gray);
+	background-color: var(--light-gray);
+}
+input[type="button"].big:not(:disabled):hover,button.big:not(:disabled):hover {
+	border: 3px solid var(--light-gray-hover);
+	background-color: var(--light-gray-hover);
+}
+input[type="button"].point,button.point {
+	border: 3px solid var(--point);
+	color: var(--light-white);
+	background-color: var(--point);
+}
+input[type="button"].point:not(:disabled):hover,button.point:not(:disabled):hover {
+	border: 3px solid var(--point-hover);
+	background-color: var(--point-hover);
+}
+input[type="button"].point:disabled,button.point:disabled {
+	border: 3px solid var(--light-gray-disabled);
+	background-color: var(--light-gray-disabled);
+	cursor: default;
+}
+input[type="button"].reverse-point,button.reverse-point {
+	border: 3px solid var(--point);
+	color: var(--point);
+	background-color: transparent;
+}
+input[type="button"].reverse-point:hover,button.reverse-point:hover {
+	border: 3px solid var(--point-hover);
+	color: var(--point-hover);
+	background-color: transparent;
+}
+input[type="button"].reverse-silver,button.reverse-silver {
+	border: 3px solid var(--silver);
+	color: var(--silver);
+	background-color: transparent;
+}
+input[type="button"].reverse-silver:hover,button.reverse-silver:hover {
+	border: 3px solid var(--silver-hover);
+	color: var(--silver-hover);
+	background-color: transparent;
+}
+button.square {
+	margin: 0;
+	width: 100px;
+	height: 100px;
+	word-wrap: break-word;
+	word-break: keep-all;
+}
+
+/* 공통: 아이콘 버튼 */
+i.bi {
+	margin: 10px;
+	padding: 5px;
+	font-size: 1.4rem;
+	text-align: center;
+	color: var(--point);
+	transition: all 0.5s ease;
+	cursor: pointer;
+}
+i.bi:hover {
+	color: var(--point-hover);
 }
 
 /* 공통 : 상단 바 */
@@ -166,18 +425,4 @@ svg.bi {
 }
 .header-chat i.bi.disabled {
 	color: var(--silver);
-}
-
-/* 아이콘 버튼 */
-i.bi {
-	margin: 10px;
-	padding: 5px;
-	font-size: 1.4rem;
-	text-align: center;
-	color: var(--point);
-	transition: all 0.5s ease;
-	cursor: pointer;
-}
-i.bi:hover {
-	color: var(--point-hover);
 }

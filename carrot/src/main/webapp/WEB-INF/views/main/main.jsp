@@ -8,7 +8,7 @@
 <meta charset="UTF-8">
 <title>번개 맞은 당근 나라</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jhmin.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/main.css">
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
@@ -72,7 +72,7 @@
 				</c:if>
 			</div>
 			</a>
-			<div><a class="address" href="main.do?sido=${item.memberVO.sido}&sigungu=${item.memberVO.sigungu}&bname=${item.memberVO.bname}">${item.memberVO.bname}</a></div>
+			<div class="info"><a href="main.do?sido=${item.memberVO.sido}&sigungu=${item.memberVO.sigungu}&bname=${item.memberVO.bname}">${item.memberVO.bname}</a> · <span class="time" data-registered="${item.registered}" data-modified="${item.modified}"></span></div>
 			<div class="info gray">
 				관심 ${item.likes} · 댓글 ${item.replies} · 채팅 ${item.chats}
 			</div>
@@ -85,6 +85,7 @@
 	</c:if>
 <!-- 목록 출력 끝 -->	
 </div>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/StringUtil.js"></script>
 <script type="text/javascript">
 	let search = document.getElementById('search');
 	let search_btn = document.getElementsByClassName('bi-search');
@@ -172,6 +173,19 @@
 	category.addEventListener('change', function() {
 		search.submit();
 	}, false)
+	
+	// 수정 또는 등록 시간 처리
+	let times = document.querySelectorAll('span.time');
+	for(let i=0;i<times.length;i++) {
+		if(!times[i].dataset.modified) {
+			times[i].textContent = getTimeSince(times[i].dataset.registered);
+			times[i].title = times[i].dataset.registered;
+		}
+		else {
+			times[i].textContent = '수정 ' + getTimeSince(times[i].dataset.modified);
+			times[i].title = times[i].dataset.modified;
+		}
+	}
 </script>
 </body>
 </html>

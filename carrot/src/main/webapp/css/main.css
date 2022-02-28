@@ -1,0 +1,50 @@
+@charset "UTF-8";
+
+/* 메인 : 검색 바 */
+form#search {
+	margin: 75px auto 0;
+	padding: 0;
+	width: 900px;
+	border: none;
+}
+form#search ul li input[type="search"] {
+	width: 250px;
+}
+
+/* 메인 : 물품 목록 */
+.list-main {
+	margin: 25px auto;
+	padding: 0;
+	width: 1000px;
+}
+.list-main li {
+	margin: 5px;
+	padding: 5px;
+	width: 190px;
+}
+.list-main .flex-column div {
+	margin-top: 5px;
+	padding: 0 10px;
+}
+.list-main li img {
+	margin-bottom: 5px;
+	width: 180px;
+	height: 180px;
+	border-radius: 10px;
+}
+.list-product-title {
+	font-size: 1rem;
+	font-weight: bold;
+}
+.list-main li .price {
+	font-weight: bold;
+	font-size: 1rem;
+}
+.list-main li .info a:hover {
+	color: var(--light-black);
+}
+.search-none {
+	margin: 0 auto;
+	width: 360px;
+	height: 360px;
+}

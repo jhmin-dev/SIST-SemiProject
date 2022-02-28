@@ -6,7 +6,6 @@
 <meta charset="UTF-8">
 <title>번개 맞은 당근 나라</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jhmin.css">
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>

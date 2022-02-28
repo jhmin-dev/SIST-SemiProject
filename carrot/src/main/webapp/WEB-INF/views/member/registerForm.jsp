@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <title>회원 가입</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/jhmin.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/member.css">
 </head>
 <body>
 <jsp:include page="/WEB-INF/views/common/header.jsp"/>
