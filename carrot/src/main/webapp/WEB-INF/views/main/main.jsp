@@ -86,6 +86,7 @@
 <!-- 목록 출력 끝 -->	
 </div>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/StringUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/UIUtil.js"></script>
 <script type="text/javascript">
 	let search = document.getElementById('search');
 	let search_btn = document.getElementsByClassName('bi-search');
@@ -169,23 +170,12 @@
 	}
 	
 	// 카테고리 선택시 submit 이벤트 발생
-	let category = document.getElementsByName('category')[0];
-	category.addEventListener('change', function() {
+	document.getElementsByName('category')[0].addEventListener('change', function() {
 		search.submit();
 	}, false)
 	
 	// 수정 또는 등록 시간 처리
-	let times = document.querySelectorAll('span.time');
-	for(let i=0;i<times.length;i++) {
-		if(!times[i].dataset.modified) {
-			times[i].textContent = getTimeSince(times[i].dataset.registered);
-			times[i].title = times[i].dataset.registered;
-		}
-		else {
-			times[i].textContent = '수정 ' + getTimeSince(times[i].dataset.modified);
-			times[i].title = times[i].dataset.modified;
-		}
-	}
+	getTimeFormatted(document.querySelectorAll('.list-main span.time'));
 </script>
 </body>
 </html>

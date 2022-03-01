@@ -101,7 +101,7 @@
 						<i class="bi bi-star"></i>
 						<i class="bi bi-star"></i>
 					</div>
-					<div class="gray underline">매너 평점 <span class="bold">${sellerVO.rate}</span></div>
+					<div class="manner-info gray underline"></div>
 				</div>
 			</a>
 		</li>
@@ -214,43 +214,19 @@
 <!-- 실시간 중고 더보기 끝 -->
 	</ul>
 </div>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/validateInput.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/StringUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/UIUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/validateInput.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
 	let cp = '${pageContext.request.contextPath}';
 	
 	// 매너 평점 처리
-	let stars = document.querySelectorAll('.manner-stars i.bi');
-	let seller_rate = '${sellerVO.rate}';
-	if(!seller_rate) {
-		for(let i=0;i<stars.length;i++) {
-			if(i<2) stars[i].classList.replace('bi-star', 'bi-star-fill');
-			if(i==2) stars[i].classList.replace('bi-star', 'bi-star-half');
-			stars[i].classList.add('disabled');
-		}
-		stars[0].parentNode.parentNode.querySelector('div.gray.underline').textContent = '표시할 매너 평점이 없어요';
-	}
-	else {
-		for(let i=0;i<stars.length;i++) {
-			if(i<Math.floor(seller_rate)) stars[i].classList.replace('bi-star', 'bi-star-fill');
-			if(i+1==Math.floor(seller_rate) && seller_rate-Math.floor(seller_rate)>=0.5) stars[i+1].classList.replace('bi-star', 'bi-star-half')
-		}
-	}
+	fillMannerRate('${sellerVO.rate}', document.querySelectorAll('.manner-stars i.bi'), document.querySelector('.manner-info'));
 	
 	// 실시간 중고 더보기에서 수정 또는 등록 시간 처리
-	let times = document.querySelectorAll('.list-other span.time');
-	for(let i=0;i<times.length;i++) {
-		if(!times[i].dataset.modified) {
-			times[i].textContent = getTimeSince(times[i].dataset.registered);
-			times[i].title = times[i].dataset.registered;
-		}
-		else {
-			times[i].textContent = '수정 ' + getTimeSince(times[i].dataset.modified);
-			times[i].title = times[i].dataset.modified;
-		}
-	}
-	
+	getTimeFormatted(document.querySelectorAll('.list-other span.time'));
+
 /*	
 	// 댓글 토글
 	let comment_lists = document.getElementsByClassName('comment-list');
