@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>채팅 : ${product.title}</title>
+<title>채팅 : ${productVO.title}</title>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/layout.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/chat.css">
 </head>
@@ -28,7 +28,7 @@
 					</select>
 				</form>
 			</li>
-			<c:if test="${empty chatrooms && empty param.achatroom_num}">
+			<c:if test="${empty chatrooms && empty param.chatroom}">
 <!-- 채팅방 목록이 없는 경우 시작 -->
 			<li class="list-area flex-column">
 				<div class="chat-notice">
@@ -37,7 +37,7 @@
 			</li>
 <!-- 채팅방 목록이 없는 경우 끝 -->
 			</c:if>
-			<c:if test="${!empty chatrooms || !empty param.achatroom_num}">
+			<c:if test="${!empty chatrooms || !empty param.chatroom}">
 <!-- 채팅방 목록이 있는 경우 시작 -->
 			<li class="list-area">
 				<ul class="flex-column">
@@ -52,18 +52,18 @@
 <!-- 현재 채팅 시작 -->
 		<ul class="chat-main flex-column">
 <!-- 채팅방 목록이 없는 경우 시작 -->
-		<c:if test="${empty chatrooms && empty param.achatroom_num}">
+		<c:if test="${empty chatrooms && empty param.chatroom}">
 			<li class="chat-header who-area">
 				<div class="chat-title no-reply">환영합니다</div>
 			</li>
 			<li><hr><li>
-			<li class="read-area no-reply">
+			<li class="read-area">
 				<ul class="flex-column">
 					<li class="flex-column">
 						<div class="chat-you">
-							<i class="chat-profile-icon no-reply bi bi-person-hearts"></i>
+							<i class="chat-profile-icon bi bi-person-hearts"></i>
 							<div class="flex-row align-end">
-								<div class="chat-content">${user_nickname}님, 반갑습니다!</div>
+								<div class="chat-content">${nickname}님, 반갑습니다!</div>
 							</div>
 						</div>
 						<div class="chat-you">
@@ -82,16 +82,16 @@
 			<li><hr></li>
 			<li class="buttons no-reply flex-row justify-center">
 				<input type="button" class="reverse-point" value="우리 동네 물품 보러가기" onclick="location.href = '${pageContext.request.contextPath}/main/main.do';">
-				<input type="button" class="point" value="FAQ 바로가기" onclick="location.href = '${pageContext.request.contextPath}/board/memberBoardFAQ.do';">
+				<input type="button" class="point" value="FAQ 바로가기" onclick="">
 			</li>
 <!-- 채팅방 목록이 없는 경우 끝 -->
 		</c:if>
-		<c:if test="${!empty chatrooms || !empty param.achatroom_num}">
+		<c:if test="${!empty chatrooms || !empty param.chatroom}">
 <!-- 채팅방 목록이 있는 경우 시작 -->
 <!-- 현재 채팅 헤더 시작 -->
 			<li class="chat-header who-area flex-row space-between align-start">
-				<div class="chat-title">${opponent.nickname}</div>
-				<c:if test="${chatroom.seller_num!=0}">
+				<div class="chat-title">${opponentVO.nickname}</div>
+				<c:if test="${chatroomVO.seller!=0}">
 				<div class="manner flex-column align-end">
 					<div class="manner-stars">
 						<i class="bi bi-star"></i>
@@ -100,43 +100,44 @@
 						<i class="bi bi-star"></i>
 						<i class="bi bi-star"></i>
 					</div>
-					<div class="gray underline">매너 평점 <span class="bold">${opponent.rate}</span></div>
+					<div class="manner-info gray underline"></div>
 				</div>
 				</c:if>
 			</li>
 			<li><hr></li>
-			<c:if test="${chatroom.seller_num!=0}">
+			<c:if test="${chatroomVO.seller!=0}">
 			<li class="chat-header product-area flex-row space-between">
 				<div class="flex-row align-start">
-					<img src="${pageContext.request.contextPath}/upload/${product.photo1}">
+					<img src="${pageContext.request.contextPath}/upload/${productVO.photo1}">
 					<div class="flex-column">
-						<div class="chat-title">${product.title}</div>
+						<div class="chat-title">${productVO.title}</div>
 						<div class="chat-subtitle">
-							<c:if test="${product.price>0}">
-							<fmt:formatNumber value="${product.price}"/>원
+							<c:if test="${productVO.price>0}">
+							<fmt:formatNumber value="${productVO.price}"/>원
 							</c:if>
-							<c:if test="${product.price==0}">
+							<c:if test="${productVO.price==0}">
 							나눔
 							</c:if>
 						</div>
 					</div>
 				</div>
 				<c:choose>
-				<c:when test="${product.status==1}">
+				<c:when test="${productVO.deleted==1}">
 				<button type="button" class="point square" disabled>삭제된 물품</button>
 				</c:when>
-				<c:when test="${chatroom.seller_num==user_num && product.complete!=1}">
+				<c:when test="${productVO.complete==1}">
+					<c:if test="${productVO.buyer==user}"> <%-- chatroom의 buyer은 구매(희망)자고 product의 buyer이 실제 구매자 --%>
+					<button type="button" class="point square" onclick="" >거래 후기 남기기</button>
+					</c:if>
+					<c:if test="${productVO.buyer!=user}">
+					<button type="button" class="point square" disabled>거래 완료된 물품</button>
+					</c:if>
+				</c:when>				
+				<c:when test="${chatroomVO.seller==user}">
 				<button type="button" class="point square" id="complete">거래 완료하기</button>
 				</c:when>
-				<c:when test="${product.buyer_num==user_num}"> <%-- chatroom의 buyer_num은 구매(희망)자고 product의 buyer_num이 실제 구매자 --%>
-				<button type="button" class="point square" 
-				onclick="location.href='${pageContext.request.contextPath}/member/MannerWriteForm.do?aproduct_num=${chatroom.aproduct_num}&seller_num=${chatroom.seller_num}&buyer_num=${user_num}';" >거래 후기 남기기</button>
-				</c:when>
-				<c:when test="${product.complete==1}">
-				<button type="button" class="point square" disabled>거래 완료된 물품</button>
-				</c:when>
 				<c:otherwise>
-				<button type="button" class="reverse-point square" onclick="location.href = '${pageContext.request.contextPath}/product/detail.do?aproduct_num=${chatroom.aproduct_num}'">물품 정보 보러가기</button>
+				<button type="button" class="reverse-point square" onclick="location.href = '${pageContext.request.contextPath}/product/detail.do?product=${chatroomVO.product}'">물품 정보 보러가기</button>
 				</c:otherwise>
 				</c:choose>
 			</li>
@@ -152,18 +153,12 @@
 			<li><hr></li>
 <!-- 주고 받은 메시지 불러오기 끝 -->
 <!-- 메시지 보내기 시작 -->
-			<c:if test="${chatroom.seller_num!=0}">
+			<c:if test="${chatroomVO.seller!=0}">
 			<li>
 				<form class="send-area flex-row justify-center">
 					<input type="text" name="content" id="content">
 					<i class="bi bi-send-fill" id="send"></i>
 				</form>
-			</li>
-			</c:if>
-			<c:if test="${chatroom.seller_num==0}">
-			<li class="flex-row justify-center">
-				<input type="button" class="reverse-point" value="우리 동네 물품 보러가기" onclick="location.href = '${pageContext.request.contextPath}/main/main.do';">
-				<input type="button" class="point" value="FAQ 바로가기" onclick="location.href = '${pageContext.request.contextPath}/board/memberBoardFAQ.do';">
 			</li>
 			</c:if>
 <!-- 메시지 보내기 끝 -->
@@ -173,152 +168,42 @@
 <!-- 현재 채팅 끝 -->
 	</div>
 </div>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/validateInput.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/StringUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/UIUtil.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/validateInput.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/chat.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
+	const cp = '${pageContext.request.contextPath}';
+
 	// 매너 평점 처리
-	let stars = document.querySelectorAll('.manner-stars i.bi');
-	let opponent_rate = '${opponent.rate}';
-	if(stars.length>0) {
-		if(!opponent_rate) {
-			for(let i=0;i<stars.length;i++) {
-				if(i<2) stars[i].classList.replace('bi-star', 'bi-star-fill');
-				if(i==2) stars[i].classList.replace('bi-star', 'bi-star-half');
-				stars[i].classList.add('disabled');
-			}
-			stars[0].parentNode.parentNode.querySelector('div.gray.underline').textContent = '표시할 매너 평점이 없어요';
-		}
-		else {
-			for(let i=0;i<stars.length;i++) {
-				if(i<Math.floor(opponent_rate)) stars[i].classList.replace('bi-star', 'bi-star-fill');
-				if(i+1==Math.floor(opponent_rate) && opponent_rate-Math.floor(opponent_rate)>=0.5) stars[i+1].classList.replace('bi-star', 'bi-star-half')
-			}
-		}
-	}
+	const rate = '${opponentVO.rate}';
+	const stars = document.querySelectorAll('.manner-stars i.bi');
+	const info = document.querySelector('.manner-info');
+	if(stars && info) fillMannerRate();
 
 	// 필터 선택시 submit 이벤트 발생
-	let search_area = document.getElementsByClassName('search-area')[0];
-	let filters = document.getElementsByName('filter')[0];
-	filters.addEventListener('change', function() {
-		search_area.submit();
+	document.querySelector('select[name=filter]').addEventListener('change', function() {
+		document.querySelector('.search-area').submit();
 	}, false)
 	
 	// ajax 통신용 파라미터 변수 선언
-	let achatroom_num = '${chatroom.achatroom_num}';
-	let aproduct_num = '${chatroom.aproduct_num}';
-	let opponent_num = ${user_num}=='${chatroom.seller_num}' ? '${chatroom.buyer_num}' : '${chatroom.seller_num}';
-	let filter = ${empty param.filter} ? undefined : '${param.filter}';
-	
-	if(${chatroom.seller_num==0}) { // 상대방이 관리자인 경우
-		document.getElementsByClassName('read-area')[0].classList.add('no-reply');
-	}
-	else { // 상대방이 일반 회원인 경우
-		document.getElementsByClassName('read-area')[0].classList.remove('no-reply');
-	}
-	
-	let cp = '${pageContext.request.contextPath}';
-	
-	// 채팅 목록 새로고침
-	let latest_chat = 0;
-	if(${!empty chatrooms || !empty param.achatroom_num}) {
-		// 채팅 목록 초기 새로고침
-		getListChatRoom();
-		
-		// 채팅 목록 1초에 한 번 새로고침
-		setInterval(function() {
-			if(document.visibilityState=='visible') { // 현재 창/탭이 활성화되어 있으면
-				$.ajax({
-					url:'latestChat.do',
-					type:'post',
-					dataType:'json',
-					timeout:10000,
-					success:function(param) {
-						if(param.latest_chat>latest_chat) { // 가장 최근에 받은 메시지 번호가 변경되면
-							getListChatRoom(); // 새로고침
-							latest_chat = param.latest_chat;
-						}
-					}
-				}); // end of ajax
-			}
-		}, 1000); // end of setInterval
-	}
-	
-	// 채팅 목록 불러오는 함수 정의
-	function getListChatRoom() {
-		$.ajax({
-			url:'listChatRoom.do',
-			type:'post',
-			data:{filter:filter},
-			dataType:'json',
-			timeout:10000,
-			success:function(param) {
-				if(param.result=='logout') {
-					alert('로그인 후 채팅 목록을 확인할 수 있습니다!');	
-				}
-				else if(param.result=='success') {
-					$('.list-area ul').empty();
-					
-					$(param.chatrooms).each(function(index, item) {
-						// 채팅 상대방 확인
-						let opponent = ${user_num}==item.seller_num ? item.buyerVO : item.sellerVO;
-						let chat_profile = opponent.photo==null ? '/images/face.png' : '/upload/' + opponent.photo;
-						
-						// 목록의 채팅방이 현재 열려 있는 채팅방인지 확인
-						let selected = '${chatroom.achatroom_num}'==item.achatroom_num ? ' selected' : '';
-						
-						// 목록의 채팅방에 안 읽은 메시지가 있는지 확인
-						let unread = item.unread>0 ? ' unread' : '';
-						
-						// 필터가 선택되어 있는지 확인
-						let filtered = ${empty param.filter} ? '' : '&filter=${param.filter}'; 
-						
-						// 채팅방이 담긴 태그 만들기
-						let stripe = index%2==0 ? '' : ' list-stripe';
-						let chatroom = '<li>';
-						chatroom += '	<a class="flex-row space-between' + stripe + '" href="chat.do?achatroom_num=' + item.achatroom_num + filtered + '">';
-						chatroom += '		<div class="flex-row">';
-						chatroom += '			<img class="list-profile" src="' + cp + chat_profile +'">'; // 채팅방 상대방 프로필
-						chatroom += '			<div class="flex-column">';
-						chatroom += '				<div class="list-who flex-row align-end">';
-						chatroom += '					<div class="chat-subtitle ellipsis">' + opponent.nickname + '</div>';
-						chatroom += '					<div class="chat-info" title="' + opponent.address + '">' + getLastToken(opponent.address, ' ') + ' · ' + '<span title="' + item.latest_date + '">' + getTimeSince(item.latest_date) + '</span></div>';
-						chatroom += '				</div>'; // end of list-who
-						chatroom += '				<div class="latest-chat ellipsis">' + item.latest_chat + '</div>';
-						chatroom += '			</div>'; // end of flex-column
-						chatroom += '		</div>'; // end of flex-row
-						chatroom += '		<div class="flex-row">';
-						chatroom += '			<img class="list-product" src="' + cp + '/upload/' + item.productVO.photo1 + '">';
-						chatroom += '			<div class="chat-selection' + (selected || unread) + '"></div>';
-						chatroom += '		</div>'; // end of flex-row
-						chatroom += '	</a>'; // end of flex-row space-between
-						chatroom += '</li>';
-						$('.list-area ul').append(chatroom); // <ul> 태그 안에 채팅방 추가
-					}); // end of each;
-				}
-				else {
-					alert('채팅 목록을 불러오는 데 실패했습니다!');
-				}
-			},
-			error:function() {
-				alert('네트워크 오류가 발생했습니다!');
-			}
-		});
-	}
-	
-	// 메시지 발송 처리 변수 선언
-	let send_area = document.getElementsByClassName('send-area')[0];
-	let send_btn = document.getElementById('send');
-	let content = document.getElementById('content');
-	
-	if(${(!empty chatrooms || !empty param.achatroom_num) && chatroom.seller_num!=0}) {
+	const filter = ${empty param.filter} ? undefined : '${param.filter}';
+	const chatroom = '${chatroomVO.chatroom}';
+	const product = '${chatroomVO.product}';
+	const user = '${user}';
+	const opponent = ${user}=='${chatroomVO.seller}' ? '${chatroomVO.buyer}' : '${chatroomVO.seller}';
+	const content = document.getElementById('content');
+
+	// 메시지 보내기 처리
+	if(${(!empty chatrooms || !empty param.chatroom) && chatroomVO.seller!=0}) {
 		// <input> 태그에서 엔터 입력시 메시지 발송
-		send_area.addEventListener('submit', function(event) {
+		document.querySelector('.send-area').addEventListener('submit', function(event) {
 			event.preventDefault(); // 기본 이벤트 제거
 			sendChat();
 		}, false);
 		// 아이콘 버튼 클릭시 메시지 발송
-		send_btn.addEventListener('click', function() {
+		document.getElementById('send').addEventListener('click', function() {
 			sendChat();
 		}, false);
 		
@@ -326,154 +211,40 @@
 		validateBytesLength({content:900})
 	}
 
-	// 메시지 보내는 함수 정의
-	function sendChat() {
-		if(!content.value.trim()) return; // 아무것도 입력하지 않은 경우 전송하지 않음
-		
-		$.ajax({
-			url:'sendChat.do',
-			type:'post',
-			data:{
-				achatroom_num:achatroom_num,
-				aproduct_num:aproduct_num,
-				opponent_num:opponent_num,
-				content:content.value
-			},
-			dataType:'json',
-			timeout:10000,
-			success:function(param) {
-				if(param.result=='logout') {
-					alert('로그인 후 채팅을 보낼 수 있습니다!')
-				}
-				else if(param.result=='success') {
-					content.value = ''; // 입력 칸 초기화
-					getListChat(1); // 새로고침
-				}
-				else {
-					alert('메시지 전송에 실패하였습니다!')
-				}
-			},
-			error:function() {
-				alert('네트워크 오류가 발생했습니다!')
-			}
-		}); // end of ajax		
-	} // end of sendChat
-	
 	// 채팅 상대방 프로필 사진 가져오기
-	let profile = '${pageContext.request.contextPath}';
-	let photo = '${opponent.photo}';
-	if(!photo) profile += '/images/face.png'; // 프로필 사진을 업로드하지 않은 경우 기본 이미지 경로 사용
-	else profile += '/upload/' + photo;
+	const chat_profile = ${!empty opponentVO.profile} ? '<img class="chat-profile" src="' + cp + '/upload/' + profile + '">' : '<i class="chat-profile-icon bi bi-person-circle"></i>';
 	
-	// 페이지 처리 변수 선언
-	let currentPage;
-	let currentHeight;
-	let count;
-	let rowCount;
-	
-	// 메시지 새로고침
-	if(${!empty chatrooms || !empty param.achatroom_num}) {
-		// 메시지 초기 새로고침
+	// 채팅 내역 새로고침
+	if(${!empty chatrooms || !empty param.chatroom}) {
+		// 초기 새로고침
 		getListChat(1);
 		
-		// 메시지 1초에 한 번 새로고침
+		// 1초에 한 번 새로고침
 		setInterval(function() {
 			if(document.visibilityState=='visible') { // 현재 창/탭이 활성화되어 있으면
-				$.ajax({
-					url:'countChat.do',
-					type:'post',
-					data:{achatroom_num:achatroom_num},
-					dataType:'json',
-					timeout:10000,
-					success:function(param) {
-						if(param.unread>0) { // 안 읽은 메시지가 있으면
-							getListChat(1); // 새로고침
-						}
-					}
-				}); // end of ajax
+				refreshListChat();
 			}
 		}, 1000); // end of setInterval
 	}
 	
-	// 스크롤 끝에 도달하면 추가로 채팅 내역 불러오기
-	document.querySelector('.read-area').addEventListener('scroll', function() {
-		if(currentPage<Math.ceil(count/rowCount) && this.scrollTop==0) { // 다음 페이지가 있고 스크롤 끝에 도달하면
-			getListChat(currentPage+1);
-		}
-	}, false);
-	
-	// 메시지 불러오는 함수 정의
-	function getListChat(pageNum) {
-		currentPage = pageNum;
+	// 채팅방 목록 새로고침
+	if(${!empty chatrooms || !empty param.chatroom}) {
+		// 초기 새로고침
+		getListChatRoom();
 		
-		$.ajax({
-			url:'listChat.do',
-			type:'post',
-			data:{
-				pageNum:pageNum,
-				achatroom_num:achatroom_num
-			},
-			dataType:'json',
-			timeout:10000,
-			success:function(param) {
-				if(param.result=='logout') {
-					alert('로그인 후 채팅을 읽을 수 있습니다!');	
-				}
-				else if(param.result=='success') {
-					currentHeight = $('.read-area').prop('scrollHeight');
-					count = param.count;
-					rowCount = param.rowCount;
-	
-					if(pageNum==1) { // 처음 호출시 <ul> 태그 안의 내용 초기화
-						$('.read-area ul').empty();
-					}
-
-					// 주고 받은 메시지 불러오기
-					$(param.chats).each(function(index, item) {
-						let lastIndex = $(param.chats).length-1;
-						
-						// 메시지가 담긴 태그 만들기
-						let chat = '<li class="flex-column">';
-						if(item.amember_num==${user_num}) { // 현재 메시지를 보낸 회원이 로그인한 사용자인 경우
-							chat += '	<div class="chat-me">';
-						}
-						else { // 현재 메시지를 보낸 회원이 상대방인 경우
-							chat += '	<div class="chat-you">';
-							if(index==lastIndex || param.chats[index+1].amember_num==${user_num}) { // 상대방이 연속해서 메시지를 보낸 경우 프로필은 한 번만 표시
-								chat += '		<img src="' + profile + '" class="chat-profile">';
-							}
-						}
-						chat += '		<div class="flex-row align-end">'
-						chat += '			<div class="chat-content">' + item.content + '</div>';
-						chat += '			<div class="chat-info" title="' + (item.read_date || item.send_date) + '">' + getTimeSince(item.send_date) + '</div>';
-						chat += '		</div>';
-						chat += '	</div>';
-						chat += '</li>';
-						$('.read-area ul').prepend(chat); // <ul> 태그 안에 최신 메시지가 아래로 오도록 메시지 추가
-					}); // end of each
-					
-					// 초기 새로고침 때는 스크롤 아래로 이동, 그 이후에는 메시지 불러오기 전 스크롤 위치 유지
-					if(pageNum==1) $('.read-area').scrollTop($('.read-area').prop('scrollHeight'));
-					else $('.read-area').scrollTop($('.read-area').prop('scrollHeight') - currentHeight);
-					
-					// 채팅 목록 새로고침
-					getListChatRoom();
-				}
-				else {
-					alert('채팅을 불러오는 데 실패했습니다!');
-				}
-			},
-			error:function() {
-				alert('네트워크 오류가 발생했습니다!');
+		// 1초에 한 번 새로고침
+		setInterval(function() {
+			if(document.visibilityState=='visible') { // 현재 창/탭이 활성화되어 있으면
+				refreshListChatRoom();
 			}
-		}); // end of ajax
-	} // end of getListChat
-	
+		}, 1000); // end of setInterval
+	}
+
 	// 거래 완료하기
 	let complete_btn = document.getElementById('complete');
 	if(complete_btn!=null) {
 		complete_btn.addEventListener('click', function() {
-			if(${user_num!=chatroom.seller_num}) return;
+			if(${user!=chatroomVO.seller}) return;
 			
 			// 확인 모달 UI 열기
 			
@@ -481,8 +252,8 @@
 				url: cp + '/product/complete.do',
 				type:'post',
 				data:{
-					aproduct_num:aproduct_num,
-					buyer_num:opponent_num
+					product:product,
+					buyer:opponent
 				},
 				dataType:'json',
 				timeout:10000,

@@ -22,7 +22,7 @@ public class ChatDAO {
 	private ChatDAO() {}
 	
 	// 채팅방 생성하기
-	public void insertChatRoom(int aproduct_num, int seller_num, int buyer_num) throws Exception {
+	public void insertChatRoom(int product, int seller, int buyer) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
@@ -30,14 +30,14 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "INSERT INTO achatroom (achatroom_num, aproduct_num, seller_num, buyer_num) "
-				+ "VALUES (achatroom_seq.NEXTVAL, ?, ?, ?)";
+			sql = "INSERT INTO chatroom (chatroom, product, seller, buyer) "
+				+ "VALUES (chatroom_seq.NEXTVAL, ?, ?, ?)";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, aproduct_num);
-			pstmt.setInt(2, seller_num);
-			pstmt.setInt(3, buyer_num);
+			pstmt.setInt(1, product);
+			pstmt.setInt(2, seller);
+			pstmt.setInt(3, buyer);
 			
 			pstmt.executeUpdate();
 		}
@@ -50,7 +50,7 @@ public class ChatDAO {
 	}
 	
 	// 채팅방 존재 확인하기
-	public boolean existsChatRoom(int aproduct_num, int seller_num, int buyer_num) throws Exception {
+	public boolean existsChatRoom(int product, int seller, int buyer) throws Exception {
 		boolean exist = false;
 		
 		Connection conn = null;
@@ -61,13 +61,13 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT achatroom_num FROM achatroom WHERE aproduct_num=? AND seller_num=? AND buyer_num=?";
+			sql = "SELECT chatroom FROM chatroom WHERE product=? AND seller=? AND buyer=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, aproduct_num);
-			pstmt.setInt(2, seller_num);
-			pstmt.setInt(3, buyer_num);
+			pstmt.setInt(1, product);
+			pstmt.setInt(2, seller);
+			pstmt.setInt(3, buyer);
 			
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -85,8 +85,8 @@ public class ChatDAO {
 	}
 	
 	// 특정 채팅방 번호 가져오기
-	public int getChatRoom(int aproduct_num, int seller_num, int buyer_num) throws Exception {
-		int achatroom_num = -1;
+	public int getChatRoom(int product, int seller, int buyer) throws Exception {
+		int chatroom = -1;
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -96,84 +96,17 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT achatroom_num FROM achatroom WHERE aproduct_num=? AND seller_num=? AND buyer_num=?";
+			sql = "SELECT chatroom FROM chatroom WHERE product=? AND seller=? AND buyer=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, aproduct_num);
-			pstmt.setInt(2, seller_num);
-			pstmt.setInt(3, buyer_num);
+			pstmt.setInt(1, product);
+			pstmt.setInt(2, seller);
+			pstmt.setInt(3, buyer);
 			
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
-				achatroom_num = rs.getInt(1);
-			}
-		}
-		catch(Exception e) {
-			throw new Exception(e);
-		}
-		finally {
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
-		
-		return achatroom_num;
-	}
-	
-	// 특정 채팅방 정보 불러오기
-	public ChatRoomVO getChatRoom(int achatroom_num) throws Exception {
-		ChatRoomVO chatroom = null;
-		
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = null;
-		
-		try {
-			conn = DBUtil.getConnection();
-			
-			sql = "SELECT c.*, p.title, p.price, p.photo1, p.status, p.complete, p.buyer_num AS p_buyer_num, "
-				+ "s.nickname AS s_nickname, s.address AS s_address, s.rate AS s_rate, s.photo AS s_photo, "
-				+ "b.nickname AS b_nickname, b.address AS b_address, b.rate AS b_rate, b.photo AS b_photo "
-				+ "FROM achatroom c JOIN aproduct p ON c.aproduct_num=p.aproduct_num "
-				+ "JOIN amember_detail s ON c.seller_num=s.amember_num "
-				+ "JOIN amember_detail b ON c.buyer_num=b.amember_num "
-				+ "WHERE achatroom_num=?";
-			
-			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setInt(1, achatroom_num);
-			
-			rs = pstmt.executeQuery();
-			if(rs.next()) {
-				chatroom = new ChatRoomVO();
-				// 채팅방 정보 저장
-				chatroom.setAchatroom_num(achatroom_num);
-				chatroom.setAproduct_num(rs.getInt("aproduct_num"));
-				chatroom.setSeller_num(rs.getInt("seller_num"));
-				chatroom.setBuyer_num(rs.getInt("buyer_num")); // 구매(희망)자 회원 번호
-				// 물품 정보 저장
-				ProductVO product = new ProductVO();
-				product.setTitle(rs.getString("title"));
-				product.setPrice(rs.getInt("price"));
-				product.setPhoto1(rs.getString("photo1"));
-				product.setStatus(rs.getInt("status"));
-				product.setComplete(rs.getInt("complete"));
-				product.setBuyer_num(rs.getInt("p_buyer_num")); // 거래 완료된 경우의 실제 구매자 회원 번호
-				chatroom.setProductVO(product);
-				// 물품 판매자 정보 저장
-				MemberVO seller = new MemberVO();
-				seller.setNickname(rs.getString("s_nickname"));
-				seller.setAddress(rs.getString("s_address"));
-				if(rs.getString("s_rate")!=null) seller.setRate(rs.getDouble("s_rate"));
-				seller.setPhoto(rs.getString("s_photo"));
-				chatroom.setSellerVO(seller);
-				// 물품 구매(희망)자 정보 저장
-				MemberVO buyer = new MemberVO();
-				buyer.setNickname(rs.getString("b_nickname"));
-				buyer.setAddress(rs.getString("b_address"));
-				if(rs.getString("b_rate")!=null) buyer.setRate(rs.getDouble("b_rate"));
-				buyer.setPhoto(rs.getString("b_photo"));
-				chatroom.setBuyerVO(buyer);
+				chatroom = rs.getInt(1);
 			}
 		}
 		catch(Exception e) {
@@ -186,8 +119,77 @@ public class ChatDAO {
 		return chatroom;
 	}
 	
+	// 특정 채팅방 정보 불러오기
+	public ChatRoomVO getChatRoom(int chatroom) throws Exception {
+		ChatRoomVO chatroomVO = null;
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			
+			sql = "SELECT c.*, p.title, p.price, p.photo1, p.deleted, p.complete, p.buyer AS p_buyer, "
+				+ "s.nickname AS s_nickname, s.home AS s_home, s.bname AS s_bname, s.rate AS s_rate, s.profile AS s_profile, "
+				+ "b.nickname AS b_nickname, b.home AS b_home, b.bname AS b_bname, b.rate AS b_rate, b.profile AS b_profile "
+				+ "FROM chatroom c JOIN product p ON c.product=p.product "
+				+ "JOIN member_detail s ON c.seller=s.member "
+				+ "JOIN member_detail b ON c.buyer=b.member "
+				+ "WHERE chatroom=?";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, chatroom);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				chatroomVO = new ChatRoomVO();
+				// 채팅방 정보 저장
+				chatroomVO.setChatroom(chatroom);
+				chatroomVO.setProduct(rs.getInt("product"));
+				chatroomVO.setSeller(rs.getInt("seller"));
+				chatroomVO.setBuyer(rs.getInt("buyer")); // 구매(희망)자 회원 번호
+				// 물품 정보 저장
+				ProductVO productVO = new ProductVO();
+				productVO.setTitle(rs.getString("title"));
+				productVO.setPrice(rs.getInt("price"));
+				productVO.setPhoto1(rs.getString("photo1"));
+				productVO.setDeleted(rs.getInt("deleted"));
+				productVO.setComplete(rs.getInt("complete"));
+				productVO.setBuyer(rs.getInt("p_buyer")); // 거래 완료된 경우의 실제 구매자 회원 번호
+				chatroomVO.setProductVO(productVO);
+				// 물품 판매자 정보 저장
+				MemberVO sellerVO = new MemberVO();
+				sellerVO.setNickname(rs.getString("s_nickname"));
+				sellerVO.setHome(rs.getString("s_home"));
+				sellerVO.setBname(rs.getString("s_bname"));
+				if(rs.getString("s_rate")!=null) sellerVO.setRate(rs.getDouble("s_rate"));
+				sellerVO.setProfile(rs.getString("s_profile"));
+				chatroomVO.setSellerVO(sellerVO);
+				// 물품 구매(희망)자 정보 저장
+				MemberVO buyerVO = new MemberVO();
+				buyerVO.setNickname(rs.getString("b_nickname"));
+				buyerVO.setHome(rs.getString("b_home"));
+				buyerVO.setBname(rs.getString("b_bname"));
+				if(rs.getString("b_rate")!=null) buyerVO.setRate(rs.getDouble("b_rate"));
+				buyerVO.setProfile(rs.getString("b_profile"));
+				chatroomVO.setBuyerVO(buyerVO);
+			}
+		}
+		catch(Exception e) {
+			throw new Exception(e);
+		}
+		finally {
+			DBUtil.executeClose(rs, pstmt, conn);
+		}
+		
+		return chatroomVO;
+	}
+	
 	// 특정 채팅방에서 메시지 보내기
-	public void sendChat(ChatVO chat) throws Exception {
+	public void sendChat(ChatVO chatVO) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
@@ -195,16 +197,15 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "INSERT INTO achat (achat_num, achatroom_num, aproduct_num, amember_num, opponent_num, content) "
-				+ "VALUES (achat_seq.NEXTVAL, ?, ?, ?, ?, ?)";
+			sql = "INSERT INTO chat (chat, chatroom, member, opponent, content) "
+				+ "VALUES (chat_seq.NEXTVAL, ?, ?, ?, ?)";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, chat.getAchatroom_num());
-			pstmt.setInt(2, chat.getAproduct_num());
-			pstmt.setInt(3, chat.getAmember_num());
-			pstmt.setInt(4, chat.getOpponent_num());
-			pstmt.setString(5, chat.getContent());
+			pstmt.setInt(1, chatVO.getChatroom());
+			pstmt.setInt(2, chatVO.getMember());
+			pstmt.setInt(3, chatVO.getOpponent());
+			pstmt.setString(4, chatVO.getContent());
 			
 			pstmt.executeUpdate();
 		}
@@ -217,7 +218,7 @@ public class ChatDAO {
 	}
 	
 	// 특정 채팅방에서 주고 받은 메시지 수 구하기
-	public int getCountChat(int achatroom_num) throws Exception {
+	public int getCountChat(int chatroom) throws Exception {
 		int count = 0;
 		
 		Connection conn = null;
@@ -228,11 +229,11 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT COUNT(achat_num) FROM achat WHERE achatroom_num=?";
+			sql = "SELECT COUNT(chat) FROM chat WHERE chatroom=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, achatroom_num);
+			pstmt.setInt(1, chatroom);
 			
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -250,7 +251,7 @@ public class ChatDAO {
 	}
 	
 	// 특정 채팅방에서 주고 받은 메시지 목록을 불러오고, 로그인한 회원이 받은 메시지는 읽음 처리하기
-	public List<ChatVO> getListChat(int achatroom_num, int amember_num, int startCount, int endCount) throws Exception {
+	public List<ChatVO> getListChat(int chatroom, int member, int startCount, int endCount) throws Exception {
 		List<ChatVO> chats = null;
 		
 		Connection conn = null;
@@ -265,35 +266,34 @@ public class ChatDAO {
 		
 			// 특정 채팅방에서 주고 받은 메시지 목록 불러오기
 			sql = "SELECT * FROM (SELECT c.*, ROWNUM AS rnum "
-					+ "FROM (SELECT * FROM achat WHERE achatroom_num=? ORDER BY achat_num DESC) c) "
+					+ "FROM (SELECT * FROM chat WHERE chatroom=? ORDER BY chat DESC) c) "
 				+ "WHERE rnum>=? AND rnum<=?";
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, achatroom_num);
+			pstmt.setInt(1, chatroom);
 			pstmt.setInt(2, startCount);
 			pstmt.setInt(3, endCount);
 			rs = pstmt.executeQuery();
 			chats = new ArrayList<ChatVO>();
 			while(rs.next()) {
-				ChatVO chat = new ChatVO();
-				chat.setAchat_num(rs.getInt("achat_num"));
-				chat.setAchatroom_num(rs.getInt("achatroom_num"));
-				chat.setAproduct_num(rs.getInt("aproduct_num"));
-				chat.setAmember_num(rs.getInt("amember_num"));
-				chat.setOpponent_num(rs.getInt("opponent_num"));
-				chat.setContent(StringUtil.useBrNoHtml(rs.getString("content"))); // 내용에 줄바꿈을 제외한 HTML 태그를 허용하지 않음
-				chat.setSend_date(rs.getString("send_date"));
-				chat.setRead_date(rs.getString("read_date"));
-				chat.setRead(rs.getInt("read"));
-				chats.add(chat);
+				ChatVO chatVO = new ChatVO();
+				chatVO.setChat(rs.getInt("chat"));
+				chatVO.setChatroom(rs.getInt("chatroom"));
+				chatVO.setMember(rs.getInt("member"));
+				chatVO.setOpponent(rs.getInt("opponent"));
+				chatVO.setContent(StringUtil.useBrNoHtml(rs.getString("content"))); // 내용에 줄바꿈을 제외한 HTML 태그를 허용하지 않음
+				chatVO.setSent(rs.getString("sent"));
+				chatVO.setReceived(rs.getString("received"));
+				chatVO.setRead(rs.getInt("read"));
+				chats.add(chatVO);
 			}
 			
 			// 로그인한 회원이 받은 메시지 읽음 처리하기
-			sql = "UPDATE achat SET read=2, read_date=SYSDATE "
-				+ "WHERE achatroom_num=? AND opponent_num=? AND achat_num<? AND read=1";
+			sql = "UPDATE chat SET read=1, received=CURRENT_DATE "
+				+ "WHERE chatroom=? AND opponent=? AND chat<? AND read=0";
 			pstmt2 = conn.prepareStatement(sql);
-			pstmt2.setInt(1, achatroom_num);
-			pstmt2.setInt(2, amember_num); // 로그인한 회원이 받은 메시지를 검색
-			pstmt2.setInt(3, chats.get(0).getAchat_num()+1); // 불러온 메시지 중 가장 최신 메시지의 번호 구하기
+			pstmt2.setInt(1, chatroom);
+			pstmt2.setInt(2, member); // 로그인한 회원이 받은 메시지를 검색
+			pstmt2.setInt(3, chats.get(0).getChat()+1); // 불러온 메시지 중 가장 최신 메시지의 번호 구하기
 			pstmt2.executeUpdate();
 			
 			conn.commit();
@@ -311,7 +311,7 @@ public class ChatDAO {
 	}
 	
 	// 특정 채팅방에서 안 읽은 메시지 수 구하기
-	public int getCountUnread(int achatroom_num, int amember_num) throws Exception {
+	public int getCountUnread(int chatroom, int member) throws Exception {
 		int count = 0;
 		
 		Connection conn = null;
@@ -322,12 +322,12 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT COUNT(achat_num) FROM achat WHERE achatroom_num=? AND opponent_num=? AND read=1";
+			sql = "SELECT COUNT(chat) FROM chat WHERE chatroom=? AND opponent=? AND read=0";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, achatroom_num);
-			pstmt.setInt(2, amember_num); // 로그인한 회원이 받은 메시지를 검색
+			pstmt.setInt(1, chatroom);
+			pstmt.setInt(2, member); // 로그인한 회원이 받은 메시지를 검색
 			
 			rs = pstmt.executeQuery();
 			if(rs.next()) {
@@ -345,7 +345,7 @@ public class ChatDAO {
 	}
 	
 	// 회원별로 채팅방 목록과 각 채팅방의 가장 최근 메시지 1건 불러오기
-	public List<ChatRoomVO> getListChatRoom(int amember_num, String filter) throws Exception {
+	public List<ChatRoomVO> getListChatRoom(int member, String filter) throws Exception {
 		List<ChatRoomVO> chatrooms = null;
 		
 		Connection conn = null;
@@ -353,36 +353,45 @@ public class ChatDAO {
 		ResultSet rs = null;
 		String sql = null;
 		String sub_sql = "";
+		int bind = 0;
 		
 		try {
 			conn = DBUtil.getConnection();
 			
 			if(filter!=null && !filter.isEmpty()) {
-				if(filter.equals("2")) sub_sql = "AND p.status=2 AND p.complete=0 "; // 거래 중
-				else if(filter.equals("3")) sub_sql = "AND p.status=2 AND ((p.amember_num=21 OR p.buyer_num=21) AND p.complete=1) "; // 거래 완료
+				if(filter.equals("2")) sub_sql = "AND p.deleted=0 AND p.complete=0 "; // 거래 중
+				else if(filter.equals("3")) sub_sql = "AND p.deleted=0 AND ((p.member=? OR p.buyer=?) AND p.complete=1) "; // 거래 완료
 			}
 			
-			sql = "SELECT * FROM achat JOIN (SELECT MAX(achat_num) AS achat_num FROM achat "
-					+ "JOIN (SELECT c.achatroom_num, p.status, p.complete FROM achatroom c "
-						+ "JOIN aproduct p ON c.aproduct_num=p.aproduct_num "
-						+ "WHERE (c.seller_num=? OR c.buyer_num=?) " + sub_sql
-					+ ") USING(achatroom_num) GROUP BY achatroom_num) "
-				+ "USING(achat_num) ORDER BY achat_num DESC";
+			sql = "SELECT * FROM chat JOIN (SELECT MAX(chat) AS chat FROM chat "
+					+ "JOIN (SELECT c.chatroom, p.deleted, p.complete FROM chatroom c "
+						+ "JOIN product p ON c.product=p.product "
+						+ "WHERE (c.seller=? OR c.buyer=?) " + sub_sql
+					+ ") USING(chatroom) GROUP BY chatroom) "
+				+ "USING(chat) ORDER BY chat DESC";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, amember_num); // 로그인한 회원이 판매자로 참여하고 있는 채팅방 검색
-			pstmt.setInt(2, amember_num); // 로그인한 회원이 구매자로 참여하고 있는 채팅방 검색
+			if(filter!=null && !filter.isEmpty()) {
+				if(filter.equals("3")) {
+					pstmt.setInt(++bind, member); // 로그인한 회원이 판매 완료한 채팅방 검색
+					pstmt.setInt(++bind, member); // 로그인한 회원이 구매 완료한 채팅방 검색
+				}
+			}
+			pstmt.setInt(++bind, member); // 로그인한 회원이 판매자로 참여하고 있는 채팅방 검색
+			pstmt.setInt(++bind, member); // 로그인한 회원이 구매자로 참여하고 있는 채팅방 검색
 			
 			rs = pstmt.executeQuery();
 			chatrooms = new ArrayList<ChatRoomVO>();
 			while(rs.next()) {
-				int achatroom_num = rs.getInt("achatroom_num");
-				ChatRoomVO chatroom = getChatRoom(achatroom_num);
-				chatroom.setLatest_chat(StringUtil.useBrNoHtml(rs.getString("content"))); // 내용에 줄바꿈을 제외한 HTML 태그를 허용하지 않음
-				chatroom.setLatest_date(rs.getString("send_date"));
-				chatroom.setUnread(getCountUnread(achatroom_num, amember_num));
-				chatrooms.add(chatroom);
+				int chatroom = rs.getInt("chatroom");
+				ChatRoomVO chatroomVO = getChatRoom(chatroom);
+				ChatVO chatVO = new ChatVO();
+				chatVO.setContent(StringUtil.useBrNoHtml(rs.getString("content"))); // 내용에 줄바꿈을 제외한 HTML 태그를 허용하지 않음
+				chatVO.setSent(rs.getString("sent"));
+				chatroomVO.setChatVO(chatVO);
+				chatroomVO.setUnread(getCountUnread(chatroom, member));
+				chatrooms.add(chatroomVO);
 			}
 		}
 		catch(Exception e) {
@@ -396,7 +405,7 @@ public class ChatDAO {
 	}
 	
 	// 회원별로 가장 최근에 받은 메시지 1건 불러오기
-	public int getLatestChat(int amember_num) throws Exception {
+	public int getLatestChat(int member) throws Exception {
 		int latest_chat = 0;
 		
 		Connection conn = null;
@@ -407,11 +416,11 @@ public class ChatDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "SELECT MAX(achat_num) FROM achat WHERE opponent_num=?";
+			sql = "SELECT MAX(chat) FROM chat WHERE opponent=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, amember_num);
+			pstmt.setInt(1, member);
 			
 			rs = pstmt.executeQuery();
 			

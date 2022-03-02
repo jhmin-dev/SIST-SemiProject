@@ -24,24 +24,24 @@ public class ListChatAction implements Action {
 		
 		Map<String, Object> mapAjax = new HashMap<String, Object>();
 		
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인되어 있는 경우
-			int achatroom_num = Integer.parseInt(request.getParameter("achatroom_num"));
+			int chatroom = Integer.parseInt(request.getParameter("chatroom"));
 			
 			ChatDAO dao = ChatDAO.getInstance();
 			
 			// 페이지 처리
-			int count = dao.getCountChat(achatroom_num);
+			int count = dao.getCountChat(chatroom);
 			int rowCount = 10;
 			PagingUtil page = new PagingUtil(Integer.parseInt(pageNum), count, rowCount, 1, null);
 
 			// 주고 받은 메시지 불러오기
 			List<ChatVO> chats = null;
 			if(count>0) {
-				chats = dao.getListChat(achatroom_num, user_num, page.getStartCount(), page.getEndCount());
+				chats = dao.getListChat(chatroom, user, page.getStartCount(), page.getEndCount());
 			}
 			else {
 				chats = Collections.emptyList(); // 데이터가 없는 경우 null 대신 비어 있는 리스트를 반환

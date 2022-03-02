@@ -20,19 +20,18 @@ public class SendChatAction implements Action {
 		
 		Map<String, String> mapAjax = new HashMap<String, String>();
 		
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인되어 있는 경우
-			ChatVO chat = new ChatVO();
-			chat.setAchatroom_num(Integer.parseInt(request.getParameter("achatroom_num")));
-			chat.setAproduct_num(Integer.parseInt(request.getParameter("aproduct_num")));
-			chat.setAmember_num(user_num);
-			chat.setOpponent_num(Integer.parseInt(request.getParameter("opponent_num")));
-			chat.setContent(request.getParameter("content"));
+			ChatVO chatVO = new ChatVO();
+			chatVO.setChatroom(Integer.parseInt(request.getParameter("chatroom")));
+			chatVO.setMember(user);
+			chatVO.setOpponent(Integer.parseInt(request.getParameter("opponent")));
+			chatVO.setContent(request.getParameter("content"));
 			
-			ChatDAO.getInstance().sendChat(chat);
+			ChatDAO.getInstance().sendChat(chatVO);
 			
 			mapAjax.put("result", "success");
 		}

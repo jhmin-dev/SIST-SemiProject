@@ -17,13 +17,13 @@ public class LatestChatAction implements Action {
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> mapAjax = new HashMap<String, Object>();
 		
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인되어 있는 경우
 			// 가장 최근에 받은 메시지 번호 구하기
-			int latest_chat = ChatDAO.getInstance().getLatestChat(user_num);
+			int latest_chat = ChatDAO.getInstance().getLatestChat(user);
 			
 			mapAjax.put("latest_chat", latest_chat);
 			mapAjax.put("result", "success");

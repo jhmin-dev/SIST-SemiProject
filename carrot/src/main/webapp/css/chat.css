@@ -24,12 +24,8 @@ ul.chat-main li hr {
 	max-width: 270px;
 }
 .read-area {
-	height: 540px;
 	overflow-y: auto;
 	flex-grow: 1;
-}
-.read-area.no-reply {
-	height: 640px;
 }
 .send-area input[type="text"] {
 	flex-grow: 1;
@@ -98,10 +94,11 @@ hr.vertical {
 	object-position: top;
 	border-radius: 50%;
 }
-.chat-profile-icon.no-reply {
+.chat-profile-icon {
 	margin: 10px 10px 0;
 	width: 25px;
 	height: 25px;
+	pointer-events: none;
 }
 .list-profile {
 	width: 50px;

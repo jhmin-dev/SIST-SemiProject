@@ -19,12 +19,12 @@ public class ListChatRoomAction implements Action {
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> mapAjax = new HashMap<String, Object>();
 		
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인되어 있는 경우
-			List<ChatRoomVO> chatrooms = ChatDAO.getInstance().getListChatRoom(user_num, request.getParameter("filter"));
+			List<ChatRoomVO> chatrooms = ChatDAO.getInstance().getListChatRoom(user, request.getParameter("filter"));
 			
 			mapAjax.put("chatrooms", chatrooms);
 			mapAjax.put("result", "success");

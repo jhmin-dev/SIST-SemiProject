@@ -107,7 +107,7 @@ CREATE TABLE myproduct(
 );
 
 -- MYPRODUCT_SEQ
-CREATE SEQUENCE myproduct_seq START WITH 10;
+CREATE SEQUENCE myproduct_seq;
 
 
 -- MANNER
@@ -126,7 +126,7 @@ CREATE TABLE manner(
 );
 
 -- MANNER_SEQ
-CREATE SEQUENCE manner_seq START WITH 10;
+CREATE SEQUENCE manner_seq;
 
 
 -- CHATROOM
@@ -143,7 +143,7 @@ CREATE TABLE chatroom(
 );
 
 -- CHATROOM_SEQ
-CREATE SEQUENCE chatroom_seq START WITH 10;
+CREATE SEQUENCE chatroom_seq;
 
 -- CHAT
 CREATE TABLE chat(
@@ -162,7 +162,7 @@ CREATE TABLE chat(
 );
 
 -- CHAT_SEQ
-CREATE SEQUENCE chat_seq START WITH 10;
+CREATE SEQUENCE chat_seq;
 
 
 -- REPLY
@@ -182,4 +182,4 @@ CREATE TABLE reply(
 ALTER TABLE reply ADD CONSTRAINT reply_fk3 FOREIGN KEY (parent) REFERENCES reply (reply);
 
 -- REPLY_SEQ
-CREATE SEQUENCE reply_seq START WITH 10;
+CREATE SEQUENCE reply_seq;

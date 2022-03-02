@@ -17,12 +17,12 @@ public class CompleteAction implements Action {
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, String> mapAjax = new HashMap<String, String>();
 		
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인한 경우
-			ProductDAO.getInstance().setComplete(Integer.parseInt(request.getParameter("aproduct_num")), Integer.parseInt(request.getParameter("buyer_num")));
+			ProductDAO.getInstance().setComplete(Integer.parseInt(request.getParameter("product")), Integer.parseInt(request.getParameter("buyer")));
 			
 			mapAjax.put("result", "success");
 		}

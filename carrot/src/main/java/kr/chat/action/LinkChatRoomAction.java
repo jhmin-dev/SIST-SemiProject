@@ -17,23 +17,23 @@ public class LinkChatRoomAction implements Action {
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map<String, Object> mapAjax = new HashMap<String, Object>();
 		
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			mapAjax.put("result", "logout");
 		}
 		else { // 로그인되어 있는 경우
 			ChatDAO dao = ChatDAO.getInstance();
 			
-			int aproduct_num = Integer.parseInt(request.getParameter("aproduct_num"));
-			int seller_num = Integer.parseInt(request.getParameter("seller_num"));
-			boolean exist = dao.existsChatRoom(aproduct_num, seller_num, user_num);
+			int product = Integer.parseInt(request.getParameter("product"));
+			int seller = Integer.parseInt(request.getParameter("seller"));
+			boolean exist = dao.existsChatRoom(product, seller, user);
 			if(exist==false) { // 이전에 채팅한 적이 없는 경우
-				dao.insertChatRoom(aproduct_num, seller_num, user_num); // 채팅방 생성
+				dao.insertChatRoom(product, seller, user); // 채팅방 생성
 			}
 			
-			int achatroom_num = dao.getChatRoom(aproduct_num, seller_num, user_num); // 채팅방 번호 구하기
-			if(achatroom_num>0) { // 정상적인 채팅방 번호가 반환된 경우
-				mapAjax.put("achatroom_num", achatroom_num);
+			int chatroom = dao.getChatRoom(product, seller, user); // 채팅방 번호 구하기
+			if(chatroom>0) { // 정상적인 채팅방 번호가 반환된 경우
+				mapAjax.put("chatroom", chatroom);
 				mapAjax.put("result", "success");
 			}
 			else {

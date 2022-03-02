@@ -15,8 +15,8 @@ public class ChatAction implements Action {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Integer user_num = (Integer)request.getSession().getAttribute("user_num");
-		if(user_num==null) { // 로그인되어 있지 않은 경우
+		Integer user = (Integer)request.getSession().getAttribute("user");
+		if(user==null) { // 로그인되어 있지 않은 경우
 			return "redirect:/member/loginForm.do";
 		}
 		
@@ -24,33 +24,32 @@ public class ChatAction implements Action {
 		ChatDAO dao = ChatDAO.getInstance();
 		
 		// 채팅 목록 불러오기
-		List<ChatRoomVO> chatrooms = dao.getListChatRoom(user_num, request.getParameter("filter"));
+		List<ChatRoomVO> chatrooms = dao.getListChatRoom(user, request.getParameter("filter"));
 		request.setAttribute("chatrooms", chatrooms);
 		
 		// 파라미터 값과 채팅 목록 길이를 이용하여 현재 채팅방 번호 지정
-		String achatroom_num_p = request.getParameter("achatroom_num");
-		int achatroom_num = -1;
-		if(achatroom_num_p!=null) achatroom_num = Integer.parseInt(achatroom_num_p);
-		else if(chatrooms.size()>0) achatroom_num = chatrooms.get(0).getAchatroom_num();
+		int chatroom = 0;
+		if(request.getParameter("chatroom")!=null) chatroom = Integer.parseInt(request.getParameter("chatroom"));
+		else if(chatrooms.size()>0) chatroom = chatrooms.get(0).getChatroom();
 		
 		// 현재 채팅방 정보 불러오기
-		ChatRoomVO chatroom = null;
-		ProductVO product = null;
-		MemberVO opponent = null;
-		if(achatroom_num>-1) {
-			chatroom = dao.getChatRoom(achatroom_num);
-			product = chatroom.getProductVO();
-			if(user_num==chatroom.getBuyer_num()) { // 로그인한 회원이 물품 판매자인 경우
-				opponent = chatroom.getSellerVO(); // 구매(희망)자 정보 불러오기
+		ChatRoomVO chatroomVO = null;
+		ProductVO productVO = null;
+		MemberVO opponentVO = null;
+		if(chatroom>0) {
+			chatroomVO = dao.getChatRoom(chatroom);
+			productVO = chatroomVO.getProductVO();
+			if(user==chatroomVO.getSeller()) { // 로그인한 회원이 물품 판매자인 경우
+				opponentVO = chatroomVO.getBuyerVO(); // 구매(희망)자 정보 불러오기
 			}
 			else { // 로그인한 회원이 물품 구매(희망)자인 경우
-				opponent = chatroom.getBuyerVO(); // 판매자 정보 불러오기
+				opponentVO = chatroomVO.getSellerVO(); // 판매자 정보 불러오기
 			}
 		}
 		
-		request.setAttribute("chatroom", chatroom);
-		request.setAttribute("product", product);
-		request.setAttribute("opponent", opponent);
+		request.setAttribute("chatroomVO", chatroomVO);
+		request.setAttribute("productVO", productVO);
+		request.setAttribute("opponentVO", opponentVO);
 		
 		// JSP 경로 반환
 		return "/WEB-INF/views/chat/chat.jsp";

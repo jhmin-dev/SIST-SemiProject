@@ -377,10 +377,9 @@ public class ProductDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
-	
-	/*
+
 	// 거래 완료하기
-	public void setComplete(int aproduct_num, int buyer_num) throws Exception {
+	public void setComplete(int product, int buyer) throws Exception {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = null;
@@ -388,12 +387,12 @@ public class ProductDAO {
 		try {
 			conn = DBUtil.getConnection();
 			
-			sql = "UPDATE aproduct SET complete=1, buyer_num=? WHERE aproduct_num=?";
+			sql = "UPDATE product SET complete=1, buyer=? WHERE product=?";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, buyer_num);
-			pstmt.setInt(2, aproduct_num);
+			pstmt.setInt(1, buyer);
+			pstmt.setInt(2, product);
 			
 			pstmt.executeUpdate();
 		}
@@ -404,7 +403,7 @@ public class ProductDAO {
 			DBUtil.executeClose(null, pstmt, conn);
 		}
 	}
-	*/
+
 	// 관심 상품 추가
 	public void insertMyProduct(int product, int member) throws Exception {
 		Connection conn = null;
