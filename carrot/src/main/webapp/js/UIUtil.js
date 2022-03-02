@@ -1,5 +1,5 @@
 // 매너 평점 처리
-function fillMannerRate(rate, stars, info) {
+function fillMannerRate() {
 	if(!rate) { // 매너 평가 점수 평균 값이 없으면(=인자로 빈 문자열이 전달되면)
 		for(let i=0;i<stars.length;i++) {
 			if(i<2) stars[i].classList.replace('bi-star', 'bi-star-fill'); // 채워진 별 2개
@@ -26,7 +26,7 @@ function fillMannerRate(rate, stars, info) {
 }
 
 // 물품 목록에서 수정 또는 등록 시간 처리
-function getTimeFormatted(times) {
+function getTimeFormatted() {
 	for(let i=0;i<times.length;i++) {
 		if(!times[i].dataset.modified) {
 			times[i].textContent = getTimeSince(times[i].dataset.registered);

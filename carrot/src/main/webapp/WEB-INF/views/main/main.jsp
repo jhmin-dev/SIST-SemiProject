@@ -175,7 +175,8 @@
 	}, false)
 	
 	// 수정 또는 등록 시간 처리
-	getTimeFormatted(document.querySelectorAll('.list-main span.time'));
+	const times = document.querySelectorAll('.list-main span.time');
+	if(times) getTimeFormatted();
 </script>
 </body>
 </html>

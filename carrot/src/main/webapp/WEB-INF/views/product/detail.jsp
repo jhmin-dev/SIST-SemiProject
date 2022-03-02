@@ -219,13 +219,17 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/validateInput.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-	let cp = '${pageContext.request.contextPath}';
+	const cp = '${pageContext.request.contextPath}';
 	
 	// 매너 평점 처리
-	fillMannerRate('${sellerVO.rate}', document.querySelectorAll('.manner-stars i.bi'), document.querySelector('.manner-info'));
+	const rate = '${sellerVO.rate}';
+	const stars = document.querySelectorAll('.manner-stars i.bi');
+	const info = document.querySelector('.manner-info');
+	if(stars && info) fillMannerRate();
 	
 	// 실시간 중고 더보기에서 수정 또는 등록 시간 처리
-	getTimeFormatted(document.querySelectorAll('.list-other span.time'));
+	const times = document.querySelectorAll('.list-other span.time');
+	if(times) getTimeFormatted();
 
 /*	
 	// 댓글 토글
@@ -661,7 +665,7 @@
 			}
 		}); // end of ajax
 	}, false); // end of addEventListener
-	/*
+
 	// 채팅방 연결
 	let link_chatroom = document.getElementById('link_chatroom');
 	if(link_chatroom!=null) {
@@ -692,7 +696,6 @@
 			})
 		}, false); // end of addEventListener
 	} // end of if
-	*/
 </script>
 </body>
 </html>
